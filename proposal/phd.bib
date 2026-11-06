@@ -1,0 +1,1021 @@
+
+@article{lang2023high,
+  title={A high-resolution canopy height model of the Earth},
+  author={Lang, Nico and Jetz, Walter and Schindler, Konrad and Wegner, Jan Dirk},
+  journal={Nature Ecology \& Evolution},
+  volume={7},
+  number={11},
+  pages={1778--1789},
+  year={2023},
+  publisher={Nature Publishing Group UK London},
+summary  = {This paper uses sentinel-2 along with geolocation to predict traget GEDI reference and creates global scale canopy height model.},
+}
+
+#location + image to predict fine-grained image classification
+@InProceedings{Aodha_2019_ICCV,
+author = {Mac Aodha, Oisin and Cole, Elijah and Perona, Pietro},
+title = {Presence-Only Geographical Priors for Fine-Grained Image Classification},
+booktitle = ICCV,
+year = {2019},
+summary ={location, time, and image to predict fine-grained image classification}
+}
+
+#location to predict species distribution maps
+@inproceedings{cole2023spatial,
+  title={Spatial implicit neural representations for global-scale species mapping},
+  author={Cole, Elijah and Van Horn, Grant and Lange, Christian and Shepard, Alexander and Leary, Patrick and Perona, Pietro and Loarie, Scott and Mac Aodha, Oisin},
+  booktitle=ICML,
+  year={2023},
+summary = {Spatial implicit neural representations for global-scale species mapping}
+}
+
+#location+image to predict soundscape maps
+@inproceedings{khanal2024psm,
+  title={PSM: Learning Probabilistic Embeddings for Multi-scale Zero-Shot Soundscape Mapping},
+  author={Khanal, Subash and Xing, Eric and Sastry, Srikumar and Dhakal, Aayush and Xiong, Zhexiao and Ahmad, Adeel and Jacobs, Nathan},
+  booktitle={ACM Multimedia},
+  year={2024}
+}
+
+#location+image to predict bird species distribution maps
+@inproceedings{sastry2024birdsat,
+  title={Birdsat: Cross-view contrastive masked autoencoders for bird species classification and mapping},
+  author={Sastry, Srikumar and Khanal, Subash and Dhakal, Aayush and Huang, Di and Jacobs, Nathan},
+  booktitle={IEEE/CVF Winter Conference on Applications of Computer Vision},
+  pages={7136--7145},
+  year={2024},
+summary = {utilises geolocation along with image for fine-grained birds species classification as well as distrubtion mapping.}
+}
+
+#location as an input for geographical question answering
+@article{mai2020se,
+  title={SE-KGE: A location-aware knowledge graph embedding model for geographic question answering and spatial semantic lifting},
+  author={Mai, Gengchen and Janowicz, Krzysztof and Cai, Ling and Zhu, Rui and Regalia, Blake and Yan, Bo and Shi, Meilin and Lao, Ni},
+  journal={Transactions in GIS},
+  volume={24},
+  number={3},
+  pages={623--655},
+  year={2020},
+  publisher={Wiley Online Library},
+summary = {location-aware knowledge graph for geographical question answering}
+}
+
+
+#learning location representations
+#nonparametric methods
+@inproceedings{gaolearning,
+  title={Learning Grid Cells as Vector Representation of Self-Position Coupled with Matrix Representation of Self-Motion},
+  author={Gao, Ruiqi and Xie, Jianwen and Zhu, Song-Chun and Wu, Ying Nian},
+  booktitle=ICLR,
+    year={2019},
+summary={location in a 2D grid is represented by a high dimensional vector and 2D displacement is represented by a matrix transforming the location vector.}
+}
+
+@article{mai2023sphere2vec,
+  title={Sphere2Vec: A general-purpose location representation learning over a spherical surface for large-scale geospatial predictions},
+  author={Mai, Gengchen and Xuan, Yao and Zuo, Wenyun and He, Yutong and Song, Jiaming and Ermon, Stefano and Janowicz, Krzysztof and Lao, Ni},
+  journal={ISPRS Journal of Photogrammetry and Remote Sensing},
+  volume={202},
+  pages={439--462},
+  year={2023},
+  publisher={Elsevier},
+summary = {proposes multi-scale location encoder which encodes geolocations on a globe while respecting spherical distances.}
+}
+
+@inproceedings{russwurm2023geographic,
+  title={Geographic location encoding with spherical harmonics and sinusoidal representation networks},
+  author={Ru{\ss}wurm, Marc and Klemmer, Konstantin and Rolf, Esther and Zbinden, Robin and Tuia, Devis},
+  booktitle=ICLR,
+  year=2024,
+summary={represnts geolocations using spherical harmonics basis functions}
+}
+
+#parametric models
+@inproceedings{mai2023csp,
+  title={{CSP}: Self-Supervised Contrastive Spatial Pre-Training for Geospatial-Visual Representations},
+  author={Mai, Gengchen and Lao, Ni and He, Yutong and Song, Jiaming and Ermon, Stefano},
+  booktitle=ICML,
+  year={2023},
+summary={Contrastive pre-training between geolocation and geotagged ground-level image or overhead image at the location.}
+}
+
+@inproceedings{vivanco2024geoclip,
+  title={{GeoCLIP}: Clip-inspired alignment between locations and images for effective worldwide geo-localization},
+  author={Vivanco Cepeda, Vicente and Nayak, Gaurav Kumar and Shah, Mubarak},
+  booktitle=NIPS,
+  year={2024},
+summary={clip-like training between geolocation and geotagged natural images for effective geo-localization. This training results in a powerful location encoder also useful for other geospatial tasks beyond geolocalization.}
+}
+
+@inproceedings{klemmer2023satclip,
+  title={{SatCLIP}: Global, General-Purpose Location Embeddings with Satellite Imagery},
+  author={Klemmer, Konstantin and Rolf, Esther and Robinson, Caleb and Mackey, Lester and Ru{\ss}wurm, Marc},
+  booktitle=AAAI,
+  year={2025},
+summary={Contrastive learning between satellite imagery and geolocation such that the location encoder can be useful for diverse downstream geospatial tasks.}
+}
+
+# ___________________________________________________________________________________
+#Multimodal Contrastive Learning
+##this is the CLIP paper
+@inproceedings{radford2021learning,
+  title={Learning transferable visual models from natural language supervision},
+  author={Radford, Alec and Kim, Jong Wook and Hallacy, Chris and Ramesh, Aditya and Goh, Gabriel and Agarwal, Sandhini and Sastry, Girish and Askell, Amanda and Mishkin, Pamela and Clark, Jack and others},
+  booktitle=ICML,
+  pages={8748--8763},
+  year={2021}
+}
+
+#just an improvement to CLIP loss 
+@inproceedings{yang2022vision,
+  title={Vision-language pre-training with triple contrastive learning},
+  author={Yang, Jinyu and Duan, Jiali and Tran, Son and Xu, Yi and Chanda, Sampath and Chen, Liqun and Zeng, Belinda and Chilimbi, Trishul and Huang, Junzhou},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={15671--15680},
+  year={2022}
+}
+
+#another image-text paper
+@inproceedings{yaofilip,
+  title={FILIP: Fine-grained Interactive Language-Image Pre-Training},
+  author={Yao, Lewei and Huang, Runhui and Hou, Lu and Lu, Guansong and Niu, Minzhe and Xu, Hang and Liang, Xiaodan and Li, Zhenguo and Jiang, Xin and Xu, Chunjing},
+  booktitle={International Conference on Learning Representations}
+}
+
+#ALBEF
+@inproceedings{li2021align,
+  title={Align before fuse: Vision and language representation learning with momentum distillation},
+  author={Li, Junnan and Selvaraju, Ramprasaath and Gotmare, Akhilesh and Joty, Shafiq and Xiong, Caiming and Hoi, Steven Chu Hong},
+  booktitle=NIPS,
+  year={2021}
+}
+
+
+#this is imagebind paper
+@inproceedings{girdhar2023imagebind,
+  title={Imagebind: One embedding space to bind them all},
+  author={Girdhar, Rohit and El-Nouby, Alaaeldin and Liu, Zhuang and Singh, Mannat and Alwala, Kalyan Vasudev and Joulin, Armand and Misra, Ishan},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={15180--15190},
+  year={2023}
+}
+
+
+#this paper uses exif data and images for contrastive training
+@inproceedings{zheng2023exif,
+  title={Exif as language: Learning cross-modal associations between images and camera metadata},
+  author={Zheng, Chenhao and Shrivastava, Ayush and Owens, Andrew},
+  booktitle=CVPR,
+  year={2023}
+}
+
+@inproceedings{elizalde2023clap,
+  title={{CLAP}: learning audio concepts from natural language supervision},
+  author={Elizalde, Benjamin and Deshmukh, Soham and Al Ismail, Mahmoud and Wang, Huaming},
+  booktitle={IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)},
+  year={2023}
+}
+
+#this is sat2cap
+@InProceedings{Dhakal_2024_CVPR,
+    author    = {Dhakal, Aayush and Ahmad, Adeel and Khanal, Subash and Sastry, Srikumar and Kerner, Hannah and Jacobs, Nathan},
+    title     = {{Sat2Cap}: Mapping Fine-Grained Textual Descriptions from Satellite Images},
+    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) Workshops},
+    month     = {June},
+    year      = {2024},
+    pages     = {533-542}
+}
+
+#contrastive training between satellite image and ground image to improve natural image representations
+@inproceedings{huynh2024contrastive,
+  title={Contrastive ground-level image and remote sensing pre-training improves representation learning for natural world imagery},
+  author={Huynh, Andy V and Gillespie, Lauren E and Lopez-Saucedo, Jael and Tang, Claire and Sikand, Rohan and Exp{\'o}sito-Alonso, Mois{\'e}s},
+  booktitle=ECCV,
+  year={2024},
+}
+
+#now we start talking about the problems with multimodal contrastive learning 
+#this paper talks about what happens contrastive training from a multi-view redundancy perspective. The idea is that the final layer of the models preserves only shared information between the two modalities. So if there is unique information from modalities that can be useful in downstream tasks, such approaches will not be optimal 
+@inproceedings{liang2023factorized,
+  title={Factorized contrastive learning: Going beyond multi-view redundancy},
+  author={Liang, Paul Pu and Deng, Zihao and Ma, Martin Q and Zou, James Y and Morency, Louis-Philippe and Salakhutdinov, Ruslan},
+  booktitle=NIPS,
+  volume={36},
+  year={2023}
+}
+
+#this paper talks about what happens in the projection head. The important thing for our paper is that the projection layers select a subspace from the input space, and this selection is made such that it is optimal to solve the contrastive objective. So there is loss of any unique information in this layer 
+@article{gupta2022understanding,
+  title={Understanding and improving the role of projection head in self-supervised learning},
+  author={Gupta, Kartik and Ajanthan, Thalaiyasingam and Hengel, Anton van den and Gould, Stephen},
+  journal={arXiv preprint arXiv:2212.11491},
+  year={2022}
+}
+
+# ___________________________________________________________________________________
+# Retrieval Augmented Methods
+Retrieval AUgmentation in Generation Tasks
+#retrieval augmented  image generation
+@inproceedings{chenre,
+  title={Re-Imagen: Retrieval-Augmented Text-to-Image Generator},
+  author={Chen, Wenhu and Hu, Hexiang and Saharia, Chitwan and Cohen, William W},
+  booktitle=ICLR,
+year=2023
+}
+
+@inproceedings{blattmann2022retrieval,
+  title={Retrieval-augmented diffusion models},
+  author={Blattmann, Andreas and Rombach, Robin and Oktay, Kaan and M{\"u}ller, Jonas and Ommer, Bj{\"o}rn},
+  booktitle=NIPS,
+  volume={35},
+  pages={15309--15324},
+  year={2022}
+}
+
+@article{kirstain2023x,
+  title={X\&Fuse: Fusing Visual Information in Text-to-Image Generation},
+  author={Kirstain, Yuval and Levy, Omer and Polyak, Adam},
+  journal={arXiv e-prints},
+  pages={arXiv--2303},
+  year={2023}
+}
+
+#retrieval augmented text generation
+@article{lewis2020retrieval,
+  title={Retrieval-augmented generation for knowledge-intensive nlp tasks},
+  author={Lewis, Patrick and Perez, Ethan and Piktus, Aleksandra and Petroni, Fabio and Karpukhin, Vladimir and Goyal, Naman and K{\"u}ttler, Heinrich and Lewis, Mike and Yih, Wen-tau and Rockt{\"a}schel, Tim and others},
+  journal={Advances in Neural Information Processing Systems},
+  volume={33},
+  pages={9459--9474},
+  year={2020}
+}
+
+@inproceedings{borgeaud2022improving,
+  title={Improving language models by retrieving from trillions of tokens},
+  author={Borgeaud, Sebastian and Mensch, Arthur and Hoffmann, Jordan and Cai, Trevor and Rutherford, Eliza and Millican, Katie and Van Den Driessche, George Bm and Lespiau, Jean-Baptiste and Damoc, Bogdan and Clark, Aidan and others},
+  booktitle=ICML,
+  pages={2206--2240},
+  year={2022}}
+
+@article{siriwardhana2023improving,
+  title={Improving the domain adaptation of retrieval augmented generation (RAG) models for open domain question answering},
+  author={Siriwardhana, Shamane and Weerasekera, Rivindu and Wen, Elliott and Kaluarachchi, Tharindu and Rana, Rajib and Nanayakkara, Suranga},
+  journal={Transactions of the Association for Computational Linguistics},
+  volume={11},
+  pages={1--17},
+  year={2023},
+  publisher={MIT Press One Broadway, 12th Floor, Cambridge, Massachusetts 02142, USA~…}
+}
+
+#retireval augmented for text to 3D generation
+@inproceedings{seoretrieval,
+  title={Retrieval-Augmented Score Distillation for Text-to-3D Generation},
+  author={Seo, Junyoung and Hong, Susung and Jang, Wooseok and Kim, In{\`e}s Hyeonsu and Kwak, Min-Seop and Lee, Doyup and Kim, Seungryong},
+  booktitle={Forty-first International Conference on Machine Learning},
+    year={2024}
+}
+
+
+#retrieval augmentation for audio captioning
+@article{koizumi2020audio,
+  title={Audio captioning using pre-trained large-scale language model guided by audio-based similar caption retrieval},
+  author={Koizumi, Yuma and Ohishi, Yasunori and Niizumi, Daisuke and Takeuchi, Daiki and Yasuda, Masahiro},
+  journal={arXiv preprint arXiv:2012.07331},
+  year={2020}
+}
+
+#retrieval augmentation for generating molecular structure
+@inproceedings{wangretrieval,
+  title={Retrieval-based Controllable Molecule Generation},
+  author={Wang, Zichao and Nie, Weili and Qiao, Zhuoran and Xiao, Chaowei and Baraniuk, Richard and Anandkumar, Anima},
+  booktitle={The Eleventh International Conference on Learning Representations}
+}
+
+#Retrieval augmentation for non-generative tasks
+#this paper introduces retrieval augmentation for classification tasks
+@inproceedings{long2022retrieval,
+  title={Retrieval augmented classification for long-tail visual recognition},
+  author={Long, Alexander and Yin, Wei and Ajanthan, Thalaiyasingam and Nguyen, Vu and Purkait, Pulak and Garg, Ravi and Blair, Alan and Shen, Chunhua and van den Hengel, Anton},
+  booktitle=CVPR,
+  year={2022}
+}
+
+
+@inproceedings{tosh2021contrastive,
+  title={Contrastive learning, multi-view redundancy, and linear models},
+  author={Tosh, Christopher and Krishnamurthy, Akshay and Hsu, Daniel},
+  booktitle={Algorithmic Learning Theory},
+  year={2021}}
+
+@article{oord2018representation,
+  title={Representation learning with contrastive predictive coding},
+  author={Oord, Aaron van den and Li, Yazhe and Vinyals, Oriol},
+  journal={arXiv preprint arXiv:1807.03748},
+  year={2018}
+}
+
+@inproceedings{cong2022satmae,
+  title={{SatMAE}: Pre-training transformers for temporal and multi-spectral satellite imagery},
+  author={Cong, Yezhen and Khanna, Samar and Meng, Chenlin and Liu, Patrick and Rozi, Erik and He, Yutong and Burke, Marshall and Lobell, David and Ermon, Stefano},
+  booktitle=NIPS,
+  year={2022}
+}
+
+@article{dinerstein2017ecoregion,
+  title={An ecoregion-based approach to protecting half the terrestrial realm},
+  author={Dinerstein, Eric and Olson, David and Joshi, Anup and Vynne, Carly and Burgess, Neil D and Wikramanayake, Eric and Hahn, Nathan and Palminteri, Suzanne and Hedao, Prashant and Noss, Reed and others},
+  journal={BioScience},
+  volume={67},
+  number={6},
+  pages={534--545},
+  year={2017},
+  publisher={Oxford University Press}
+}
+
+ @article{pace1997sparse,
+  title={Sparse spatial autoregressions},
+  author={Pace, R Kelley and Barry, Ronald},
+  journal={Statistics \& Probability Letters},
+  volume={33},
+  number={3},
+  pages={291--297},
+  year={1997},
+  publisher={Elsevier}
+}
+
+@article{rolf2021generalizable,
+  title={A generalizable and accessible approach to machine learning with global satellite imagery},
+  author={Rolf, Esther and Proctor, Jonathan and Carleton, Tamma and Bolliger, Ian and Shankar, Vaishaal and Ishihara, Miyabi and Recht, Benjamin and Hsiang, Solomon},
+  journal={Nature communications},
+  volume={12},
+  number={1},
+  pages={4392},
+  year={2021},
+  publisher={Nature Publishing Group UK London}
+}
+
+
+@article{Hooker_Duveiller_Cescatti_2018, title={A global dataset of air temperature derived from satellite remote sensing and weather stations}, volume={5}, DOI={10.1038/sdata.2018.246}, number={1}, journal={Scientific Data}, author={Hooker, Josh and Duveiller, Gregory and Cescatti, Alessandro}, year={2018}, month={Nov}} 
+
+@inproceedings{van2018inaturalist,
+  title={The {iNaturalist} species classification and detection dataset},
+  author={Van Horn, Grant and Mac Aodha, Oisin and Song, Yang and Cui, Yin and Sun, Chen and Shepard, Alex and Adam, Hartwig and Perona, Pietro and Belongie, Serge},
+  booktitle=CVPR,
+  year={2018}
+}
+
+@article{devlin2018bert,
+  title={Bert: Pre-training of deep bidirectional transformers for language understanding},
+  author={Devlin, Jacob},
+  journal={arXiv preprint arXiv:1810.04805},
+  year={2018}
+}
+
+@inproceedings{chen2020simple,
+  title={A simple framework for contrastive learning of visual representations},
+  author={Chen, Ting and Kornblith, Simon and Norouzi, Mohammad and Hinton, Geoffrey},
+  booktitle=ICML,
+  year={2020},
+}
+
+@inproceedings{he2022masked,
+  title={Masked autoencoders are scalable vision learners},
+  author={He, Kaiming and Chen, Xinlei and Xie, Saining and Li, Yanghao and Doll{\'a}r, Piotr and Girshick, Ross},
+  booktitle=CVPR,
+  year={2022}
+}
+
+@article{gonzalez2010measurement,
+  title={Measurement of areas on a sphere using Fibonacci and latitude--longitude lattices},
+  author={Gonz{\'a}lez, {\'A}lvaro},
+  journal={Mathematical geosciences},
+  volume={42},
+  pages={49--64},
+  year={2010},
+  publisher={Springer}
+}
+
+@article{Alpher04,
+author = {FirstName Alpher and FirstName Fotheringham-Smythe and FirstName Gamow},
+title = {Can a machine frobnicate?},
+journal = {Journal of Foo},
+volume = 14,
+number = 1,
+pages = {234--778},
+year = 2004
+}
+
+@inproceedings{Alpher05,
+author = {FirstName Alpher and FirstName Gamow},
+title = {Can a computer frobnicate?},
+booktitle = CVPR,
+pages = {234--778},
+year = 2005
+}
+
+@inproceedings{salem2020learning,
+  title={Learning a dynamic map of visual appearance},
+  author={Salem, Tawfiq and Workman, Scott and Jacobs, Nathan},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={12435--12444},
+  year={2020}
+}
+
+@article{streltsov2020estimating,
+  title={Estimating residential building energy consumption using overhead imagery},
+  author={Streltsov, Artem and Malof, Jordan M and Huang, Bohao and Bradbury, Kyle},
+  journal={Applied Energy},
+  volume={280},
+  pages={116018},
+  year={2020},
+  publisher={Elsevier}
+}
+
+@article{zhou2017places,
+  title={Places: A 10 million image database for scene recognition},
+  author={Zhou, Bolei and Lapedriza, Agata and Khosla, Aditya and Oliva, Aude and Torralba, Antonio},
+  journal={IEEE transactions on pattern analysis and machine intelligence},
+  volume={40},
+  number={6},
+  pages={1452--1464},
+  year={2017},
+  publisher={IEEE}
+}
+
+@article{laffont2014transient,
+  title={Transient attributes for high-level understanding and editing of outdoor scenes},
+  author={Laffont, Pierre-Yves and Ren, Zhile and Tao, Xiaofeng and Qian, Chao and Hays, James},
+  journal={ACM Transactions on graphics (TOG)},
+  volume={33},
+  number={4},
+  pages={1--11},
+  year={2014},
+  publisher={ACM New York, NY, USA}
+}
+
+@inproceedings{greenwell2018goes,
+  title={What goes where: Predicting object distributions from above},
+  author={Greenwell, Connor and Workman, Scott and Jacobs, Nathan},
+  booktitle={IGARSS 2018-2018 IEEE International Geoscience and Remote Sensing Symposium},
+  pages={4375--4378},
+  year={2018},
+  organization={IEEE}
+}
+
+@misc{linmicrosoft,
+  title={Microsoft coco: Common objects in context. InEuropean conference on computer vision 2014 Sep 6 (pp. 740-755)},
+  author={Lin, TY and Maire, M and Belongie, S and Hays, J and Perona, P and Ramanan, D and Doll{\'a}r, P and Zitnick, CL and others},
+  publisher={Springer, Cham}
+}
+
+@inproceedings{bency2017beyond,
+  title={Beyond spatial auto-regressive models: Predicting housing prices with satellite imagery},
+  author={Bency, Archith J and Rallapalli, Swati and Ganti, Raghu K and Srivatsa, Mudhakar and Manjunath, BS},
+  booktitle={2017 IEEE winter conference on applications of computer vision (WACV)},
+  pages={320--329},
+  year={2017},
+  organization={IEEE}
+}
+
+@article{thomee2016yfcc100m,
+  title={YFCC100M: The new data in multimedia research},
+  author={Thomee, Bart and Shamma, David A and Friedland, Gerald and Elizalde, Benjamin and Ni, Karl and Poland, Douglas and Borth, Damian and Li, Li-Jia},
+  journal={Communications of the ACM},
+  volume={59},
+  number={2},
+  pages={64--73},
+  year={2016},
+  publisher={ACM New York, NY, USA}
+}
+
+@inproceedings{radford2021learning,
+  title={Learning transferable visual models from natural language supervision},
+  author={Radford, Alec and Kim, Jong Wook and Hallacy, Chris and Ramesh, Aditya and Goh, Gabriel and Agarwal, Sandhini and Sastry, Girish and Askell, Amanda and Mishkin, Pamela and Clark, Jack and others},
+  booktitle={International conference on machine learning},
+  pages={8748--8763},
+  year={2021},
+  organization={PMLR}
+}
+
+@article{li2021align,
+  title={Align before fuse: Vision and language representation learning with momentum distillation},
+  author={Li, Junnan and Selvaraju, Ramprasaath and Gotmare, Akhilesh and Joty, Shafiq and Xiong, Caiming and Hoi, Steven Chu Hong},
+  journal={Advances in neural information processing systems},
+  volume={34},
+  pages={9694--9705},
+  year={2021}
+}
+
+@article{yao2021filip,
+  title={FILIP: fine-grained interactive language-image pre-training},
+  author={Yao, Lewei and Huang, Runhui and Hou, Lu and Lu, Guansong and Niu, Minzhe and Xu, Hang and Liang, Xiaodan and Li, Zhenguo and Jiang, Xin and Xu, Chunjing},
+  journal={arXiv preprint arXiv:2111.07783},
+  year={2021}
+}
+
+@article{mokady2021clipcap,
+  title={Clipcap: Clip prefix for image captioning},
+  author={Mokady, Ron and Hertz, Amir and Bermano, Amit H},
+  journal={arXiv preprint arXiv:2111.09734},
+  year={2021}
+}
+
+@article{sarkar2022visual,
+  title={A Visual Active Search Framework for Geospatial Exploration},
+  author={Sarkar, Anindya and Lanier, Michael and Alfeld, Scott and Garnett, Roman and Jacobs, Nathan and Vorobeychik, Yevgeniy},
+  journal={arXiv preprint arXiv:2211.15788},
+  year={2022}
+}
+
+@article{loshchilov2017decoupled,
+  title={Decoupled weight decay regularization},
+  author={Loshchilov, Ilya and Hutter, Frank},
+  journal={arXiv preprint arXiv:1711.05101},
+  year={2017}
+}
+
+@article{loshchilov2016sgdr,
+  title={Sgdr: Stochastic gradient descent with warm restarts},
+  author={Loshchilov, Ilya and Hutter, Frank},
+  journal={arXiv preprint arXiv:1608.03983},
+  year={2016}
+}
+
+@inproceedings{cubuk2020randaugment,
+  title={Randaugment: Practical automated data augmentation with a reduced search space},
+  author={Cubuk, Ekin D and Zoph, Barret and Shlens, Jonathon and Le, Quoc V},
+  booktitle={Proceedings of the IEEE/CVF conference on computer vision and pattern recognition workshops},
+  pages={702--703},
+  year={2020}
+}
+
+@article{oord2018representation,
+  title={Representation learning with contrastive predictive coding},
+  author={Oord, Aaron van den and Li, Yazhe and Vinyals, Oriol},
+  journal={arXiv preprint arXiv:1807.03748},
+  year={2018}
+}
+
+@article{alhassan2020deep,
+  title={A deep learning framework for land-use/land-cover mapping and analysis using multispectral satellite imagery},
+  author={Alhassan, Victor and Henry, Christopher and Ramanna, Sheela and Storie, Christopher},
+  journal={Neural Computing and Applications},
+  volume={32},
+  pages={8529--8544},
+  year={2020},
+  publisher={Springer}
+}
+
+@INPROCEEDINGS{9553499,
+  author={Karra, Krishna and Kontgis, Caitlin and Statman-Weil, Zoe and Mazzariello, Joseph C. and Mathis, Mark and Brumby, Steven P.},
+  booktitle={2021 IEEE International Geoscience and Remote Sensing Symposium IGARSS}, 
+  title={Global land use / land cover with Sentinel 2 and deep learning}, 
+  year={2021},
+  volume={},
+  number={},
+  pages={4704-4707},
+  doi={10.1109/IGARSS47720.2021.9553499}}
+
+@article{feizizadeh2023machine,
+  title={Machine learning data-driven approaches for land use/cover mapping and trend analysis using Google Earth Engine},
+  author={Feizizadeh, Bakhtiar and Omarzadeh, Davoud and Kazemi Garajeh, Mohammad and Lakes, Tobia and Blaschke, Thomas},
+  journal={Journal of Environmental Planning and Management},
+  volume={66},
+  number={3},
+  pages={665--697},
+  year={2023},
+  publisher={Taylor \& Francis}
+}
+
+@article{bickel2020deep,
+  title={Deep learning-driven detection and mapping of rockfalls on mars},
+  author={Bickel, Valentin Tertius and Conway, Susan J and Tesson, Pierre-Antoine and Manconi, Andrea and Loew, Simon and Mall, Urs},
+  journal={IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing},
+  volume={13},
+  pages={2831--2841},
+  year={2020},
+  publisher={IEEE}
+}
+
+@article{zhang2021data,
+  title={Data-driven mineral prospectivity mapping by joint application of unsupervised convolutional auto-encoder network and supervised convolutional neural network},
+  author={Zhang, Shuai and Carranza, Emmanuel John M and Wei, Hantao and Xiao, Keyan and Yang, Fan and Xiang, Jie and Zhang, Shihong and Xu, Yang},
+  journal={Natural Resources Research},
+  volume={30},
+  pages={1011--1031},
+  year={2021},
+  publisher={Springer}
+}
+
+
+@inproceedings{workman2020dynamic,
+  title={Dynamic traffic modeling from overhead imagery},
+  author={Workman, Scott and Jacobs, Nathan},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={12315--12324},
+  year={2020}
+}
+
+@inproceedings{workman2017understanding,
+  title={Understanding and mapping natural beauty},
+  author={Workman, Scott and Souvenir, Richard and Jacobs, Nathan},
+  booktitle={Proceedings of the IEEE International Conference on Computer Vision},
+  pages={5589--5598},
+  year={2017}
+}
+
+@article{ilic2019deep,
+  title={Deep mapping gentrification in a large Canadian city using deep learning and Google Street View},
+  author={Ilic, Lazar and Sawada, Michael and Zarzelli, Amaury},
+  journal={PloS one},
+  volume={14},
+  number={3},
+  pages={e0212814},
+  year={2019},
+  publisher={Public Library of Science San Francisco, CA USA}
+}
+
+@article{behrens2018multi,
+  title={Multi-scale digital soil mapping with deep learning},
+  author={Behrens, Thorsten and Schmidt, Karsten and MacMillan, Robert A and Viscarra Rossel, Raphael A},
+  journal={Scientific reports},
+  volume={8},
+  number={1},
+  pages={15244},
+  year={2018},
+  publisher={Nature Publishing Group UK London}
+}
+
+@inproceedings{zong2019deepdpm,
+  title={DeepDPM: Dynamic population mapping via deep neural network},
+  author={Zong, Zefang and Feng, Jie and Liu, Kechun and Shi, Hongzhi and Li, Yong},
+  booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},
+  volume={33},
+  number={01},
+  pages={1294--1301},
+  year={2019}
+}
+
+@article{onishi2021explainable,
+  title={Explainable identification and mapping of trees using UAV RGB image and deep learning},
+  author={Onishi, Masanori and Ise, Takeshi},
+  journal={Scientific reports},
+  volume={11},
+  number={1},
+  pages={903},
+  year={2021},
+  publisher={Nature Publishing Group UK London}
+}
+
+@inproceedings{zhang2022contrastive,
+  title={Contrastive learning of medical visual representations from paired images and text},
+  author={Zhang, Yuhao and Jiang, Hang and Miura, Yasuhide and Manning, Christopher D and Langlotz, Curtis P},
+  booktitle={Machine Learning for Healthcare Conference},
+  pages={2--25},
+  year={2022},
+  organization={PMLR}
+}
+
+@inproceedings{desai2021virtex,
+  title={Virtex: Learning visual representations from textual annotations},
+  author={Desai, Karan and Johnson, Justin},
+  booktitle={Proceedings of the IEEE/CVF conference on computer vision and pattern recognition},
+  pages={11162--11173},
+  year={2021}
+}
+
+@inproceedings{jia2021scaling,
+  title={Scaling up visual and vision-language representation learning with noisy text supervision},
+  author={Jia, Chao and Yang, Yinfei and Xia, Ye and Chen, Yi-Ting and Parekh, Zarana and Pham, Hieu and Le, Quoc and Sung, Yun-Hsuan and Li, Zhen and Duerig, Tom},
+  booktitle={International Conference on Machine Learning},
+  pages={4904--4916},
+  year={2021},
+  organization={PMLR}
+}
+
+@article{yuan2021florence,
+  title={Florence: A new foundation model for computer vision},
+  author={Yuan, Lu and Chen, Dongdong and Chen, Yi-Ling and Codella, Noel and Dai, Xiyang and Gao, Jianfeng and Hu, Houdong and Huang, Xuedong and Li, Boxin and Li, Chunyuan and others},
+  journal={arXiv preprint arXiv:2111.11432},
+  year={2021}
+}
+
+
+
+@inproceedings{yang2022unified,
+  title={Unified contrastive learning in image-text-label space},
+  author={Yang, Jianwei and Li, Chunyuan and Zhang, Pengchuan and Xiao, Bin and Liu, Ce and Yuan, Lu and Gao, Jianfeng},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={19163--19173},
+  year={2022}
+}
+
+
+@inproceedings{yang2022vision,
+  title={Vision-language pre-training with triple contrastive learning},
+  author={Yang, Jinyu and Duan, Jiali and Tran, Son and Xu, Yi and Chanda, Sampath and Chen, Liqun and Zeng, Belinda and Chilimbi, Trishul and Huang, Junzhou},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={15671--15680},
+  year={2022}
+}
+
+
+@inproceedings{portillo2021straightforward,
+  title={A straightforward framework for video retrieval using clip},
+  author={Portillo-Quintero, Jes{\'u}s Andr{\'e}s and Ortiz-Bayliss, Jos{\'e} Carlos and Terashima-Mar{\'\i}n, Hugo},
+  booktitle={Pattern Recognition: 13th Mexican Conference, MCPR 2021, Mexico City, Mexico, June 23--26, 2021, Proceedings},
+  pages={3--12},
+  year={2021},
+  organization={Springer}
+}
+@inproceedings{wu2022wav2clip,
+  title={Wav2clip: Learning robust audio representations from clip},
+  author={Wu, Ho-Hsiang and Seetharaman, Prem and Kumar, Kundan and Bello, Juan Pablo},
+  booktitle={ICASSP 2022-2022 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)},
+  pages={4563--4567},
+  year={2022},
+  organization={IEEE}
+}
+
+
+@inproceedings{khandelwal2022simple,
+  title={Simple but effective: Clip embeddings for embodied ai},
+  author={Khandelwal, Apoorv and Weihs, Luca and Mottaghi, Roozbeh and Kembhavi, Aniruddha},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={14829--14838},
+  year={2022}
+}
+
+@article{cho2022fine,
+  title={Fine-grained image captioning with clip reward},
+  author={Cho, Jaemin and Yoon, Seunghyun and Kale, Ajinkya and Dernoncourt, Franck and Bui, Trung and Bansal, Mohit},
+  journal={arXiv preprint arXiv:2205.13115},
+  year={2022}
+}
+
+@article{ramesh2022hierarchical,
+  title={Hierarchical text-conditional image generation with clip latents},
+  author={Ramesh, Aditya and Dhariwal, Prafulla and Nichol, Alex and Chu, Casey and Chen, Mark},
+  journal={arXiv preprint arXiv:2204.06125},
+  year={2022}
+}
+
+@article{nichol2021glide,
+  title={Glide: Towards photorealistic image generation and editing with text-guided diffusion models},
+  author={Nichol, Alex and Dhariwal, Prafulla and Ramesh, Aditya and Shyam, Pranav and Mishkin, Pamela and McGrew, Bob and Sutskever, Ilya and Chen, Mark},
+  journal={arXiv preprint arXiv:2112.10741},
+  year={2021}
+}
+
+@article{wang2022clip,
+  title={Clip-gen: Language-free training of a text-to-image generator with clip},
+  author={Wang, Zihao and Liu, Wei and He, Qian and Wu, Xinglong and Yi, Zili},
+  journal={arXiv preprint arXiv:2203.00386},
+  year={2022}
+}
+
+
+@inproceedings{baldrati2022effective,
+  title={Effective conditioned and composed image retrieval combining CLIP-based features},
+  author={Baldrati, Alberto and Bertini, Marco and Uricchio, Tiberio and Del Bimbo, Alberto},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={21466--21474},
+  year={2022}
+}
+@inproceedings{hendriksen2022extending,
+  title={Extending CLIP for Category-to-image Retrieval in E-commerce},
+  author={Hendriksen, Mariya and Bleeker, Maurits and Vakulenko, Svitlana and van Noord, Nanne and Kuiper, Ernst and de Rijke, Maarten},
+  booktitle={Advances in Information Retrieval: 44th European Conference on IR Research, ECIR 2022, Stavanger, Norway, April 10--14, 2022, Proceedings, Part I},
+  pages={289--303},
+  year={2022},
+  organization={Springer}
+}
+@inproceedings{sain2023clip,
+  title={Clip for all things zero-shot sketch-based image retrieval, fine-grained or not},
+  author={Sain, Aneeshan and Bhunia, Ayan Kumar and Chowdhury, Pinaki Nath and Koley, Subhadeep and Xiang, Tao and Song, Yi-Zhe},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={2765--2775},
+  year={2023}
+}
+
+@inproceedings{zhai2017predicting,
+  title={Predicting ground-level scene layout from aerial imagery},
+  author={Zhai, Menghua and Bessinger, Zachary and Workman, Scott and Jacobs, Nathan},
+  booktitle={Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition},
+  pages={867--875},
+  year={2017}
+}
+
+@article{zanaga2022esa,
+  title={ESA WorldCover 10 m 2021 v200},
+  author={Zanaga, Daniele and Van De Kerchove, Ruben and Daems, Dirk and De Keersmaecker, W and Brockmann, Carsten and Kirches, Grit and Wevers, Jan and Cartus, Oliver and Santoro, Maurizio and Fritz, Steffen and others},
+  year={2022},
+  publisher={Zenodo}
+}
+
+@article{song2020mpnet,
+  title={Mpnet: Masked and permuted pre-training for language understanding},
+  author={Song, Kaitao and Tan, Xu and Qin, Tao and Lu, Jianfeng and Liu, Tie-Yan},
+  journal={Advances in Neural Information Processing Systems},
+  volume={33},
+  pages={16857--16867},
+  year={2020}
+}
+
+@article{wang2022text,
+  title={Text Embeddings by Weakly-Supervised Contrastive Pre-training},
+  author={Wang, Liang and Yang, Nan and Huang, Xiaolong and Jiao, Binxing and Yang, Linjun and Jiang, Daxin and Majumder, Rangan and Wei, Furu},
+  journal={arXiv preprint arXiv:2212.03533},
+  year={2022}
+}
+
+@inproceedings{he2020momentum,
+  title={Momentum contrast for unsupervised visual representation learning},
+  author={He, Kaiming and Fan, Haoqi and Wu, Yuxin and Xie, Saining and Girshick, Ross},
+  booktitle={Proceedings of the IEEE/CVF conference on computer vision and pattern recognition},
+  pages={9729--9738},
+  year={2020}
+}
+@article{yuan2024chatearthnet,
+  title={ChatEarthNet: A Global-Scale, High-Quality Image-Text Dataset for Remote Sensing},
+  author={Yuan, Zhenghang and Xiong, Zhitong and Mou, Lichao and Zhu, Xiao Xiang},
+  journal={arXiv preprint arXiv:2402.11325},
+  year={2024}
+}
+
+@article{wang2023skyscript,
+  title={Skyscript: A large and semantically diverse vision-language dataset for remote sensing},
+  author={Wang, Zhecheng and Prabha, Rajanie and Huang, Tianyuan and Wu, Jiajun and Rajagopal, Ram},
+  journal={arXiv preprint arXiv:2312.12856},
+  year={2023}
+}
+
+@misc{persello2022deep,
+  title={Deep learning and earth observation to support the sustainable development goals: current approaches, open challenges, and future opportunities. IEEE Geosci Remote Sens Mag 10 (2): 172--200},
+  author={Persello, C and Wegner, JD and H{\"a}nsch, R and Tuia, D and Ghamisi, P and Koeva, M and Camps-Valls, G},
+  year={2022}
+}
+
+@misc{kavvada2020towards,
+  title={Towards delivering on the sustainable development goals using earth observations},
+  author={Kavvada, Argyro and Metternicht, Graciela and Kerblat, Flora and Mudau, Naledzani and Haldorson, Marie and Laldaparsad, Sharthi and Friedl, Lawrence and Held, Alex and Chuvieco, Emilio},
+  journal={Remote Sensing of Environment},
+  volume={247},
+  pages={111930},
+  year={2020},
+  publisher={Elsevier}
+}
+
+@article{ho2020denoising,
+  title={Denoising diffusion probabilistic models},
+  author={Ho, Jonathan and Jain, Ajay and Abbeel, Pieter},
+  journal={Advances in neural information processing systems},
+  volume={33},
+  pages={6840--6851},
+  year={2020}
+}
+
+@article{goodfellow2020generative,
+  title={Generative adversarial networks},
+  author={Goodfellow, Ian and Pouget-Abadie, Jean and Mirza, Mehdi and Xu, Bing and Warde-Farley, David and Ozair, Sherjil and Courville, Aaron and Bengio, Yoshua},
+  journal={Communications of the ACM},
+  volume={63},
+  number={11},
+  pages={139--144},
+  year={2020},
+  publisher={ACM New York, NY, USA}
+}
+
+@inproceedings{rombach2022high,
+  title={High-resolution image synthesis with latent diffusion models},
+  author={Rombach, Robin and Blattmann, Andreas and Lorenz, Dominik and Esser, Patrick and Ommer, Bj{\"o}rn},
+  booktitle={Proceedings of the IEEE/CVF conference on computer vision and pattern recognition},
+  pages={10684--10695},
+  year={2022}
+}
+
+@article{saharia2022photorealistic,
+  title={Photorealistic text-to-image diffusion models with deep language understanding},
+  author={Saharia, Chitwan and Chan, William and Saxena, Saurabh and Li, Lala and Whang, Jay and Denton, Emily L and Ghasemipour, Kamyar and Gontijo Lopes, Raphael and Karagol Ayan, Burcu and Salimans, Tim and others},
+  journal={Advances in neural information processing systems},
+  volume={35},
+  pages={36479--36494},
+  year={2022}
+}
+
+@inproceedings{peebles2023scalable,
+  title={Scalable diffusion models with transformers},
+  author={Peebles, William and Xie, Saining},
+  booktitle={Proceedings of the IEEE/CVF international conference on computer vision},
+  pages={4195--4205},
+  year={2023}
+}
+
+@inproceedings{zhang2023adding,
+  title={Adding conditional control to text-to-image diffusion models},
+  author={Zhang, Lvmin and Rao, Anyi and Agrawala, Maneesh},
+  booktitle={Proceedings of the IEEE/CVF international conference on computer vision},
+  pages={3836--3847},
+  year={2023}
+}
+
+@article{khanna2023diffusionsat,
+  title={Diffusionsat: A generative foundation model for satellite imagery},
+  author={Khanna, Samar and Liu, Patrick and Zhou, Linqi and Meng, Chenlin and Rombach, Robin and Burke, Marshall and Lobell, David and Ermon, Stefano},
+  journal={arXiv preprint arXiv:2312.03606},
+  year={2023}
+}
+
+@inproceedings{sastry2024geosynth,
+  title={Geosynth: Contextually-aware high-resolution satellite image synthesis},
+  author={Sastry, Srikumar and Khanal, Subash and Dhakal, Aayush and Jacobs, Nathan},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={460--470},
+  year={2024}
+}
+
+@article{tang2024crs,
+  title={Crs-diff: Controllable remote sensing image generation with diffusion model},
+  author={Tang, Datao and Cao, Xiangyong and Hou, Xingsong and Jiang, Zhongyuan and Liu, Junmin and Meng, Deyu},
+  journal={IEEE Transactions on Geoscience and Remote Sensing},
+  year={2024},
+  publisher={IEEE}
+}
+
+@article{khader2023denoising,
+  title={Denoising diffusion probabilistic models for 3D medical image generation},
+  author={Khader, Firas and M{\"u}ller-Franzes, Gustav and Tayebi Arasteh, Soroosh and Han, Tianyu and Haarburger, Christoph and Schulze-Hagen, Maximilian and Schad, Philipp and Engelhardt, Sandy and Bae{\ss}ler, Bettina and Foersch, Sebastian and others},
+  journal={Scientific Reports},
+  volume={13},
+  number={1},
+  pages={7303},
+  year={2023},
+  publisher={Nature Publishing Group UK London}
+}
+
+@inproceedings{yoon2023sadm,
+  title={Sadm: Sequence-aware diffusion model for longitudinal medical image generation},
+  author={Yoon, Jee Seok and Zhang, Chenghao and Suk, Heung-Il and Guo, Jia and Li, Xiaoxiao},
+  booktitle={International Conference on Information Processing in Medical Imaging},
+  pages={388--400},
+  year={2023},
+  organization={Springer}
+}
+
+@inproceedings{majumder2024tango,
+  title={Tango 2: Aligning diffusion-based text-to-audio generations through direct preference optimization},
+  author={Majumder, Navonil and Hung, Chia-Yu and Ghosal, Deepanway and Hsu, Wei-Ning and Mihalcea, Rada and Poria, Soujanya},
+  booktitle={Proceedings of the 32nd ACM International Conference on Multimedia},
+  pages={564--572},
+  year={2024}
+}
+
+@inproceedings{ghosal2023text,
+  title={Text-to-audio generation using instruction guided latent diffusion model},
+  author={Ghosal, Deepanway and Majumder, Navonil and Mehrish, Ambuj and Poria, Soujanya},
+  booktitle={Proceedings of the 31st ACM International Conference on Multimedia},
+  pages={3590--3598},
+  year={2023}
+}
+
+@article{tan2025rsfake,
+  title={RSFAKE-1M: A Large-Scale Dataset for Detecting Diffusion-Generated Remote Sensing Forgeries},
+  author={Tan, Zhihong and Wang, Jiayi and Shi, Huiying and Huang, Binyuan and Wei, Hongchen and Chen, Zhenzhong},
+  journal={arXiv preprint arXiv:2505.23283},
+  year={2025}
+}
+
+@article{sun2022long,
+  title={Long-form video-language pre-training with multimodal temporal contrastive learning},
+  author={Sun, Yuchong and Xue, Hongwei and Song, Ruihua and Liu, Bei and Yang, Huan and Fu, Jianlong},
+  journal={Advances in neural information processing systems},
+  volume={35},
+  pages={38032--38045},
+  year={2022}
+}
+
+@inproceedings{wang2022medclip,
+  title={Medclip: Contrastive learning from unpaired medical images and text},
+  author={Wang, Zifeng and Wu, Zhenbang and Agarwal, Dinesh and Sun, Jimeng},
+  booktitle={Proceedings of the Conference on Empirical Methods in Natural Language Processing. Conference on Empirical Methods in Natural Language Processing},
+  volume={2022},
+  pages={3876},
+  year={2022}
+}
+
+@article{oquab2024dinov2,
+  title={DINOv2: Learning Robust Visual Features without Supervision},
+  author={Oquab, Maxime and Darcet, Timoth{\'e}e and Moutakanni, Th{\'e}o and Vo, Huy and Szafraniec, Marc and Khalidov, Vasil and Fernandez, Pierre and Haziza, Daniel and Massa, Francisco and El-Nouby, Alaaeldin and others},
+  journal={Transactions on Machine Learning Research Journal},
+  pages={1--31},
+  year={2024}
+}
+
+@article{ramesh2022hierarchical,
+  title={Hierarchical text-conditional image generation with clip latents, 2022},
+  author={Ramesh, Aditya and Dhariwal, Prafulla and Nichol, Alex and Chu, Casey and Chen, Mark},
+  journal={URL https://arxiv. org/abs/2204.06125},
+  volume={7},
+  number={4},
+  year={2022}
+}

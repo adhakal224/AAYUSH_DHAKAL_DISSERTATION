@@ -1,0 +1,900 @@
+\section{Possible Research}
+\label{sec:possibleResearch}
+
+This section contains research ideas that may be persued if time
+fermits or if other ideas are unsuccessful.
+
+  Here we describe several ways we will
+extend this work.
+
+\begin{figure}
+\centering
+
+\includegraphics[width=.2\linewidth]{covar_1}
+%\includegraphics[width=.2\linewidth]{covar_2}
+\includegraphics[width=.2\linewidth]{covar_3}
+%\includegraphics[width=.2\linewidth]{covar_4}
+\includegraphics[width=.2\linewidth]{covar_5}
+%\includegraphics[width=.2\linewidth]{covar_6}
+\includegraphics[width=.2\linewidth]{covar_7}
+%\includegraphics[width=.2\linewidth]{covar_8}
+%\includegraphics[width=.2\linewidth]{covar_9}
+%\includegraphics[width=.2\linewidth]{covar_10}
+%\includegraphics[width=.2\linewidth]{covar_11}
+%\includegraphics[width=.2\linewidth]{covar_12}
+%\includegraphics[width=.2\linewidth]{covar_13}
+%\includegraphics[width=.2\linewidth]{covar_14}
+
+\caption{False color images generated from 1, 3, 5, and 7 days
+(left--right) of visible satellite images.   The color of each pixel
+is determined by the correlation of the time-series of intensities at
+that pixel with the time-series of the middle pixel (white means the
+correlation is one).  Notice that with sufficient samples the spatial
+dependence is roughly isotropic.  It would be possible to make a
+reasonable estimate of distance from the middle pixel based only on
+the correlation.}
+
+\label{fig:timePixelCorr}
+
+\end{figure}
+
+\subsubsection{Improving Temporal Sampling by Investigating Spatial
+Dependence} 
+
+The most critical part of our localization algorithm is the
+computation of correlation between videos (or between videos and the
+time-series of a satellite pixel).  These correlations depend on the
+spatial dependence of the signal being extracted from the webcam.  If
+there is no spatial dependence then this method of localization will
+not work.  In this objective we will explore the relationship between
+spatial dependence, temporal sampling, and localization accuracy with
+the goal of improving our temporal sampling scheme.
+
+We believe that localization is most accurate when the spatial
+dependence is isotropic, broad, has a distinct peak at zero distance,
+and decreases monotonically as distance increases.  Together these
+properties mean that we can sort a large range of geographic distance
+between sample points using correlation.  This, unfortunately, is not
+true for all natural signals.  Initial results from simulation with
+visible satellite imagery (each pixel is a proxy for a camera) show
+the following:
+\begin{itemize}
+
+  \item given sufficient samples the spatial dependence of clouds
+    (usually) meets the conditions discussed above,
+
+  \item the spatial dependence is more likely to be anisotropic near
+    the ocean shore, and 
+
+  \item at some point, depending on the temporal variability of the
+    signal, it becomes useless to increase the temporal sampling rate.
+
+\end{itemize}
+
+\figref{timePixelCorr} shows false-color images that reflect the
+correlation between the sensor readings of a single pixel with all
+other pixels over different numbers of days. The correlation scores
+are higher for nearby pixels.  This is especially true as the number
+of days of measurements increases.
+
+
+We plan on further exploring the interaction between temporal sampling
+rate and spatio-temporal properties of the underlying signals to
+obtain improved sampling schemes.  The temporal sampling schemes
+should avoid over-sampling but should obtain accurate correlation
+estimates quickly.   
+
+\subsubsection{Estimating a Depth Map by Relative Localization of Pixels}
+
+Our goal is to create an automatic method for creating a scene depth
+map from a sequence of images captured from a static camera.  We will
+use the correlation between pixel values over time due to changes
+induced by clouds as the primary cue.  This cue is unexplored in the
+literature and has significant overlap with our correlation-based
+camera localization method.
+
+Recent work on depth estimation for outdoor scenes includes techniques
+using optical effects due to particulate
+matter~\cite{contrastRestoration, novelDepth2009} and strong
+structural priors~\cite{closingTheLoop}. Our approach is more similar
+to work on depth-estimation using structured light
+patterns~\cite{VaqueroCVPR2009}.  These approaches require a tight
+coupling between the camera and the structured light source.  Our
+approach differs in only requiring a stochastic description of the
+temporal properties of the light pattern (\ie we need to know the
+shape of the clouds and how far apart they are). 
+
+Our approach is as follows.  Given a sequence of images, each with $N$
+pixels, we compute the correlation, $s_{i,j}$, for each pair of
+pixels. We then estimate a mapping (this is a challenging open issue)
+that converts the correlation scores into distances in world
+coordinates, $d_{i,j} = f(s_{i,j})$. 
+
+A \naive approach to estimating world coordinates from the distance
+matrix would be to use multi-dimensional scaling (MDS).  However, MDS
+does not use the additional constraints provided by camera geometry
+and can therefore create highly improbable depth maps. The remainder
+of this section describes our method for including camera calibration
+in the process.
+
+We assume the camera calibration is in the form of a matrix, $U \in
+\R^{N \times 3}$, where each row represents the unit ray, in world
+coordinates, that corresponds to the view direction of a pixel.  We solve for the depth map,
+$x^*\in\R^{N\times1}$, by estimating a world position for each pixel
+subject to the constraint that it lies along the rays specified by the
+camera calibration.  This optimization can be conveniently specified
+using an inner-product representation as follows:
+\begin{equation}
+  x^* = \argmin_x \| R(x)  - M(x) \|_F.
+\end{equation}
+This formulation minimizes the difference in two inner product
+matrices, $R$ and $M$. The ray-based matrix,
+\begin{equation}
+  R(x) = \diag{x}U\trans{U}\diag{x},
+\end{equation}
+is the the gram matrix of the world points that correspond to the
+known depth map and the known pixel rays.  The image measurement-based
+gram matrix, $M$, is defined element-wise as:
+\begin{equation}
+  M_{i,j}(x) = \frac{1}{2}\left( x_i^2 + x_j^2 + d_{i,j}^2 \right).
+\end{equation}
+This is a the standard transformation between a distance matrix and a
+gram matrix with (conveniently) the assumption that the camera center
+is the origin.
+
+We minimize the objective function using a gradient descent method
+(\textbf{fminunc} in Matlab).  The formulation has a straightforward
+analytical gradient and Hessian computation.  Initial results using
+this method with simulated data show promising results.  The next step
+is to extend this to real image data.  For real data the challenge
+will be estimating the mapping from correlation to distances.
+
+%
+%
+%
+\subsection{Moving Beyond PCA as an Image Model}
+\label{sec:generative}
+
+(this section need a complete rewrite)
+
+The foundation of this dissertation is understanding and using the
+relationship between signals in the world and image appearance. In the
+preliminary work we showed that PCA is an effective means for
+extracting image space components that relate to unseen latent
+factors.  We also showed that by conditioning the set of images
+decomposed by PCA it is possible to extract components that do not
+depend on the conditioning variable (\eg PCA on all the noon images
+for a week does not depend significantly on sun position).
+Unfortunately PCA assumes a very simple, and often incorrect, noise
+model.  Consequently, PCA sometimes finds components and coefficient
+time-series that are irrelevant to the desired task.
+
+In this objective we will explore alternative generative models.  We
+hope to build a simple model that can accurately estimate the
+distribution of scene appearances in the future.
+
+\subsubsection{Motivation}
+
+Constructing an accurate generative model of a natural scene is a
+challenging task.  In the context of this dissertation, having a
+better generative model would improve signal extraction and scene
+structure estimation.  It could also help surveillance tasks such as
+foreground object detection, object tracking, and anomaly detection.
+The AMOS dataset provides a foundation for learning parameters of a
+generative scene model.
+
+\subsubsection{Approach}
+
+The first method will consider is a simple extension of our PCA based
+model.  We will build a PCA basis as before but we will estimate a
+conditional distribution over the PCA coefficients using an
+independent gaussian process regression (GPR) model for each
+coefficient.  Preliminary experiments with this model have shown
+promise in accurately predicting future appearance of the scene.  A
+critical component of a GPR model is a similarity function between the
+conditioning variables.  Preliminary experiments indicate that
+including similarity functions based on the time-of-day give
+significant improvements over purely time-based similarity.
+
+However, there are several limitation of the proposed method.  One is
+in the use of linear combinations of PCA basis images to represent the
+scene.  Another limitation is the use of independent gaussian process
+models for each PCA coefficient.  We will investigate alternative
+models.
+
+One possible alternative is to more explicityly model physical
+effects.  We are considering adding models that consider the
+relationship between scene geometry, illumination, particulate matter
+in the air, and lighting~\cite{basriPhotometric,sheddingLight}.
+
+\subsubsection{Open Issues}
+
+\begin{itemize}
+
+  \item Could this be used for better signal estimation?
+   
+  \item How much would it help to simultaneously solve for multiple
+    cameras?
+
+  \item Are there better ways than PCA to decompose our scene?
+
+  \item How does this work for foreground object detection? 
+
+  \item In what circumstances is the full generative model better than
+    a descriptive model (\eg a prior over the histogram of gradients)?
+
+\end{itemize}
+
+
+%
+%
+%
+\subsection{Camera Localization Methods for Moving Cameras}
+\label{sec:movingLocalization}
+
+The localization method described in \secref{localizationPrelim}
+assumes that the camera is static.  The goal of this section is to
+remove this limitation to create a method for localizing a moving
+camera in an unknown environment using cues from natural environmental
+changes.  Making this change requires a new signal extraction methods
+and a new location estimation algorithm.
+
+\subsubsection{Motivation}
+
+There are many sources of time-series images captured from moving
+cameras.  Localizing such cameras has traditionally been performed in
+two ways: frame-frame registration for small image motions and and
+frame-model registration for large motions in known environments.  Our
+problem statement cannot addressed by either of these methods.
+
+\subsubsection{Approach}
+
+Our approach is to first combine one or more images to obtain a
+distribution of possible camera locations.  Then we combine these
+distributions using a filtering framework.  We are currently
+considering options including the Kalman filter or monte-carlo
+localization~\cite{mcl}.
+
+In both techniques we must create a distribution over the geographic
+locations of the camera from time-stampped images.  Given that we are
+using a moving camera it will be more difficult to extract such a
+distribution (using SVD and using correlation for similarity will not
+be sufficient).  One approach is to replace SVD and continue to use
+correlation.  This would fit naturally into the Kalman filter and
+would use the uncertainty estimates~\secref{localizationError}.  The
+other approach is to directly estimate the distribution based on a
+single image.  For example, if we have a time-stampped image of a
+sunny day the location of camera is constrained to be on a known
+portion of the globe.  Given sufficient images with these constraints
+the location, and the path, of the camera can be estimated.
+
+The feature extraction problem is more difficult with a moving camera.
+We expect that estimating the average amount of sunlight will be easy
+but that estimating the weather conditions will require more effort.
+We will focus on the sunlight cue and explore local-feature based
+regression for weather estimation if time permits.  The AMOS dataset
+will be useful for learning the regression model.
+
+The MCL based approach has a distinct advantage because it can handle
+very general distributions.  In addition to being able to include
+broad distribution based on sunlight conditions, it supports sparse
+distributions like the distribution given that the image contains a
+beach.
+
+\subsubsection{Open Issues}
+
+\begin{itemize}
+
+  \item Is a Kalman filter sufficient?
+
+  \item What is the correct density representation (samples, a
+    Gaussian, a fixed grid)?
+
+\end{itemize}
+
+
+\subsection{Full camera calibration methods}
+
+this has been well played already... do I really want to add
+more to this?
+
+Understanding the calibration of the camera can be useful first step
+in using images from any camera.  Knowing the calibration reduces the
+uncertainty in the real world structure and appearance of the imaged
+objects.   Automatic methods for camera calibration are important for
+our work because it would be infeasible to manually calibrate all the
+cameras in the dataset.  In addition, automatic calibration methods
+are of general interest to the field.
+
+\subsubsection{Specific aims}
+
+\subsubsection{Approach}
+
+To determine the remaining camera parameters we will use a number of
+cues.  The first cue we will use is the appearance of the sky.  There
+exist analytical models of the appearance of the sky for a given sun
+position and atmospheric conditions.   We propose to solve the inverse
+problem of estimating the camera parameters given a set of appearances
+of the sky.
+
+\subsubsection{Progress}
+
+Our work on estimating additional camera parameters appeared in WACV 
+2008~\cite{jacobs08geoorient}.  This was followed by work in
+estimating the full geometric camera calibration by someone else CITE.
+
+
+\subsection{Catalog of transient objects}
+
+Thusfar we have focused on building and using models of the
+conditional relationship between underlying varaitions and the images.
+However, even with precise modeling there will be pixel intensities
+that are unexpected. 
+
+\subsubsection{Specific aims} 
+
+We will catalog and analyze the unmodeled intensity variations (e.g.,
+snow on the ground, pedestrians, or building construction).  Our goal
+is to extract a catalog of the objects, spatially-coherent unmodeled
+phenomena, that appear in the scene.
+
+We will create a method of collecting the visual phenomena that are
+not due to weather conditions and the sun position.  We will also
+create an interface to browse the object catalog for a given camera.
+
+\subsubsection{Approach}
+
+Our approach for detecting the anomalous visual phenomena is to first
+model the expected range of appearances using a conditional
+(parametric/non-parametric) model.  The image-space residuals from
+this conditional model (\ie the low probability pixels) will be
+grouped together and added to the catalog.  We expect to experiment
+with several methods of modeling the conditional distrubtion on
+intensities.
+
+Using this set of cataloged items for a single camera we will provide
+a web-based user interface for browsing the object catalog.
+
+Our approach to modelling expected intensities is similar to that used
+in the surveillance domain.  The differences is that we use a model
+conditioned on signals from the world because we have lower frame-rate
+video. 
+
+\subsubsection{Progress}
+
+We are currently working on an initial implementation of the
+conditional background model.
+
+\section{Some other Stuff I want to work on too but I probably
+don't have time so I should probably not think about it anymore}
+
+%
+%
+%
+\subsection{signals supervised}
+\label{sec:signals}
+
+Different latent factors induce different types of variations in
+images.  Understanding this relationship is of fundamental importance
+to our goal of using a network of webcams to measure the world.
+
+\secref{signalSupervised}
+
+\subsubsection{Motivation}
+
+\subsubsection{Approach}
+
+The challenge with both is that images may vary more due to other
+causes than due to the variations related to the signal of interest.
+Thus we explore efficient mechanisms to learn features that are
+invariant to other scene variations, as well as tools to condition our
+feature set on the known causes of image variation.
+
+\subsubsection{Open Issues}
+
+\begin{itemize}
+
+  \item This is not cool if we just do image regression.  I have to
+    develop a new technique for image regression and apply it to a
+    cool problem.
+    
+\end{itemize}
+
+
+%
+%
+%
+\subsection{Characterize Error in Camera Localization from
+Geo-temporal Signals}
+\label{sec:localizationError}
+
+The camera localization methods described in
+\secref{localizationPrelim} gives a single point estimate of the
+location of a static camera from a set of images.  We hope to
+characterize the causes and the magnitude of errors in the estimate.
+
+The most critical part of our localization algorithm is the
+computation of correlation between videos.  This correlation depends
+on the underlying spatial-correlation of the signal (\eg degree of
+cloudiness, average lighting intensity) that is being
+imaged by the webacm.  If this  the underlying signal gives
+uniformative camera-camera correlations or the image-image correlation
+computation is incorrect (\eg due to insufficient sampling of the
+spatial function) then the localization results will be inaccurate.
+
+There is freedom in choosing the underlying spatial function and in
+choosing how and when to sample an image.  In this objective we
+explore some of these factors with the goal of understanding the
+impact they have on localization accuracy.
+
+\subsubsection{Motivation}
+
+Understanding the sources of error will help us improve the accuracy
+of our localization algorithm.  It will inform our effort to improve
+the sampling strategy used to collect image data.  It will also enable
+principled combination of multiple estimates (for an example see
+\secref{movingLocalization}) and fusion of other cues, such as the
+appearance of recognizable landmarks.
+
+The localization algorithm depends on the relationship between images
+and latent factors in the world.  Understanding how uncertainties in
+these relationships affect the localization procedure will improve our
+understanding of the underlying latent factors.
+
+\subsubsection{Approach}
+
+We hypothesize that there are four primary sources of errors in
+computing correlation between cameras: low temporal sampling rate, low
+spatial sampling rate, spatial-temporal functions with low
+discriminative power (\eg when correlation is due to the length of a
+day and the current time is at a solar equinox), and mismatches
+between signals that are not modeled by using correlation as a
+simliarity metric (\eg non-linear camera response or temporal lag).
+We will focus on specific instances of the later two in our
+investigation. 
+
+To evaluate the impact of sampling rates we will conduct a number of
+psuedo-simulation studies.  We will forego the use of cameras and
+instead focus directly on sampling of real spatial-temporal functions.
+We will consider pixels in a real geo-registered satellite image and
+compute the spatial correlation of pixels using different sampling
+rates.  These pixel-pixel correlations will be used as input to our
+localization algorithm and the dependency of the errors on the
+sampling rates will be evaluted.
+
+To explore the issues of spatial functions with low discriminative
+power we will investigate camera-camera correlations based on amount
+of sunlight.  We choose this because it is sometimes discriminative,
+it is easy to measure from images, and it has a well-known underlying
+function (\ie the time when sunrise and sunset on a particular day and
+location can be easily computed).  We expect localization accuracy
+using sunlight-based correlation to depend on the day of the year and
+the location of the camera.
+
+In the the preliminary work we expected simple signal correlation to
+depend on the geo-spatial proximity of cameras but there may be better
+similarity measures for comparing two cameras.  We will explore one
+alternative which is to compute a non-linear mapping from images to
+signal values.  The correlation computation does not consider the
+impact of the non-linear camera response that is caused by the cameras
+automatic exposure compensation.  As an example, consider the case of
+two cameras: one with good low-light response and one with poor
+low-light response.  Even if they are in the same location the camera
+with good low-light response will appear to have a longer day and the
+cameras will likely be located differently.
+
+We will compare the ground-truth location and the ground-truth
+dawn/dusk times for a large number of cameras to assess the accuracy
+in our estimation of the day/night signal from the image sequences.
+This knowledge will help in two ways: it will enable us to quantify
+the accuracy of our day/night signal estimate and possibly provide
+insight into how to improve the mapping.
+
+\subsubsection{Open Issues}
+
+\begin{itemize}
+
+  \item How much will it help to learn to predict dawn/dusk time for a
+    given scene/camera type?
+
+  \item Is conditional correlation the correct similarity metric?  How
+    about mutual information?
+
+  \item What distribution is suitable for representing the error in
+    localization?
+
+  \item (an interesting question) How unique is the time-series of
+    weather conditions for a geographic location?
+
+\end{itemize}
+
+
+\subsection{Extracting Scene Depth}
+\label{sec:depth}
+
+Our goal is to create an automatic method for creating a scene depth
+map from a sequence of images captured from a static camera.  The
+output will consist of a single image in which the pixel values depend
+on the distance from the camera.  The primary cue we will investigate
+will be based on geographic consistency of transient weather effects.
+This cue is unexplored in the literature and has significant overlap
+with our similarity-based camera localization method.
+
+Recent work on depth estimation for outdoor scenes include techniques
+using optical effects due to particulate matter in the optical
+path~\cite{contrastRestoration, novelDepth2009} and strong structural
+priors~\cite{closingTheLoop}. Our approach is more similar to work on
+depth-estimation using structured light
+patterns~\cite{VaqueroCVPR2009,otherProjectedLight}.  These approaches
+require a tight coupling between the camera and the structured light
+source.  Our approach differs in only requiring a stochastic
+description of the aggregate temporal properties of the light pattern.  
+
+\subsubsection{Motivation}
+
+A depth map is useful for important computer vision applications such
+as object detection and object tracking.  In the context of using
+webcams as general-purpose sensors, a depth map will likely contribute
+useful features for our regression models (\eg to reduce the relative
+weights of objects in the distance in a regression model).  In
+addition to these practical benefits, exploring the relationship
+between the temporal variation of latent factors and the scene depth
+will provide valuable insight into the image formation process.
+
+\subsubsection{Approach}
+
+\begin{figure}
+\centering
+
+\includegraphics{mountains}
+
+\caption{An ideal afternoon for estimating distance.}
+
+\label{fig:distance}
+
+\end{figure}
+
+In estimating depth, \ie the distance from the camera to the imaged
+static scene element, we will use signal correlations.  Previously we
+used correlations between images to localize cameras; now we will use
+correlations between pixel to estimate the depth.  Two issues must be
+addressed: factoring out correlations due to other causes and mapping
+the pixel-to-pixel correlation estimates to scene-to-camera distance
+estimates.
+
+We are interested in correlations that result from illumination
+changes caused by passing clouds.  Considering our geo-temporal image
+formation model, we will construct image sets for which this cue is
+likely to be the dominant cause of correlation between pixels.  We
+will eliminate or reduce the impact of image variations due to: sun
+direction, seasonal variation, and human motion.  An ideal image set
+will be a few hours of temporally low-pass filtered video with many
+small fast-moving clouds (see \figref{distance}).  
+
+In the camera localization algorithm we showed that weather effects,
+caused by clouds, have spatial correlations suitable for localization.
+Given that sunlight rays are approximately parallel, an image of the
+clouds is projected to the ground, much like a satellite image.  If we
+ignore scene elements that are not directly illuminated by the sun,
+this makes the spatial correlation of light reflected off scene
+elements similar to that of the clouds themselves.  
+
+Assuming sufficient samples and an appropriate spatial correlation
+function for the clouds, correlations of the intensity of sunlit scene
+elements is a one-to-one function of distance between signal sources.
+Our goal is to learn this function for the set of images and map
+pixel-to-pixel correlations to scene-to-scene distances.  We assume
+that there is a single unknown fixed spatial correlation function for
+the entire scene and solve for this.
+
+\todo{this is new text\ldots more mathy than the above text\ldots
+make it fit together}
+
+Given a sequence of images, each with $N$ pixels, we compute a
+similarity score, $s_{i,j}$, for each pairs of pixels. We then
+estimate a mapping (see open issues below) that converts the
+similarity scores into distances in world coordinates, $d_{i,j} =
+f(s_{i,j})$.  A \naive approach to estimating world coordinates from
+this distance matrix would be to use multi-dimensional scaling (MDS).
+However, MDS does not use the additional constraints provided by the
+known camera geometry and can therefore create highly improbable depth
+maps. The remainder of this section describes our method for including
+camera calibration in the process.
+
+We assume the camera calibration is in the form of a matrix, $U \in
+\R^{N \times 3}$, where each row represents the unit ray, in world
+coordinates, that corresponds to a pixel.  We solve for the depth map,
+$x^*\in\R^{N\times1}$, by estimating a world position for each pixel
+subject to the constraint that it lies along the rays specified by the
+camera calibration.  This optimization can be conveniently specified
+using an inner-product representation as follows:
+\begin{equation}
+  x^* = \argmin_x \| R(x)  - M(x) \|_F.
+\end{equation}
+This formulation minimizes the difference in two inner product
+matrices, $R$ and $M$. The ray-based matrix,
+\begin{equation}
+  R(x) = \diag{x}U\trans{U}\diag{x},
+\end{equation}
+is the the gram matrix of the world points that correspond to the
+known depth map and the known pixel rays.  The image measurement-based
+gram matrix, $M$, is defined element-wise as:
+\begin{equation}
+  M_{i,j}(x) = \frac{1}{2}\left( x_i^2 + x_j^2 + d_{i,j}^2 \right).
+\end{equation}
+This is a the standard transformation between a distance matrix and a
+gram matrix with the assumption that the camera center is the origin.
+
+We minimize the objective function using a gradient descent method
+(\textbf{fminunc} in Matlab).  The formulation has a straightforward
+analytical gradient and Hessian computation.  As an initial condition
+we use \todo{something big}.
+
+\subsubsection{Open Issues}
+\begin{itemize}
+    
+  \item What is good representation for the spatial correlation
+    function?
+
+  \item How do we convert similarities to distances?  \todo{show some
+    pictures of this}
+
+  \item How do we include priors on scene structure to enable
+    interpolation across shadow regions?
+
+  \item Is there a better way to translate scene-to-scene distances to
+    camera-to-scene distances?
+
+  \item How do we scale this to mega-pixel images?
+    
+\end{itemize}
+
+\subsubsection{Timeline}
+
+We have an example video that gives promising pixel-to-pixel
+correlations.  We have also implemented the embedding 
+approach on simulated data.  Depth estimation results for a simulated
+$10 \times 10$ image are shown in \figref{depthPreliminary}.  The
+preliminary results show high accuracy can be achieved. 
+
+\begin{figure*}
+  \centering
+  \includegraphics[width=.9\textwidth]{depth_estimation}
+  \caption{(left) A ground truth depth map. (right) An estimated depth
+  map. \todo{more here} (right) \todo{more here}
+  }
+  \label{fig:depthPreliminary}
+\end{figure*}
+
+
+\subsection{Learning a Seasonally-Invariant Interest Operator}
+
+NOTE: There are probably already interest operator learning algorithms that
+we could just apply to the webcam data.
+
+A two-stage algorithm:
+
+\begin{enumerate}
+
+  \item 
+    \begin{itemize}
+      \item for each patch build a classifier that separates the patch
+        from all others
+      \item evaluate the error in the prediction on unseen data (new
+        images of the same scene)
+    \end{itemize}
+
+  \item
+    \begin{itemize}
+      \item build a regression model that predicts the error from the
+        previous stage given local image features
+      \item the regression model is the interest operator
+    \end{itemize}
+
+\end{enumerate}
+
+Thoughts:
+\begin{itemize}
+
+  \item could be useful for alignment of Internet images
+
+\end{itemize}
+
+\subsection{Controlling for Confounding Geo-temporal Signals}
+\label{sec:signalsControlling}
+
+Problem: When we use unsupervised techniques to extract signals we
+often get signals that are not interesting.  
+
+Current Approach: Just pick a subset of the data that does not vary
+w.r.t. the signals we don't care about and hope for the best.
+
+Solution: Control for known things, day cycle, season cycle, known weather
+conditions using some better technique.
+
+We will develop methods for extracting meaningful low-dimensional
+time-series signals from webcam images.  An important component will
+be reducing the impact of variations due to known sources of
+variation.  We will investigate different techniques for reducing the
+impact of these nuisance factors.
+
+In addition, some types of image variations, such as motion, will require
+different techniques.  We will investigate different approaches to
+dealing with motion. 
+
+\subsubsection{Approach}
+
+\todo{this needs to be made manifold learning friendly}
+
+We plan to continue using this approach and to investigate
+alternatives for cases where it fails.   Empirical evidence shows
+that the top-k PCA method will have difficulty when the underlying
+signal of interest is not a dominant cause of variation (the signal
+will not be in the basis of the top-k) and when
+the related image-space variation is not well explained by a linear
+variation (\eg motion).
+
+To handle the case where the underlying signal of interest is not the
+dominant source of variation we will remove the impact of known
+factors.  Our first approach will be to use a linear technique that
+assumes a known, but non-interesting, underlying signal.  We will use
+linear regression from this known signal to predict the time-series of
+the pixel values.  The residuals of this prediction will be the
+variations that are unexplained by the known signal.  We will then use
+the standard technique on the residuals to look for the unexplained
+sources of variation.
+
+In some cases the confounding time-series may be unknown.  In this
+case other techniques may work: solving for the confounding
+time-series by selecting pixels that are known to not be affected by
+the time-series of interest, imposing constraints on the form of the
+variations (\eg must be an affine motion), or pruning the dataset to
+remove the non-interesting variations.
+
+In the case of motion, the PCA technique does not give a single
+coefficient trajectory that is highly correlated with the underlying
+signal of interest.  As a concrete example, consider a set of images
+of a circle sliding across a fixed background.   The position of the
+circle is the only degree of freedom.  The PCA decomposition of this
+image set gives image components that are very similar to a discrete
+cosine transform.  The top PCA coefficient trajectory does not
+correspond to the position circle.
+
+\subsubsection{Timeline}
+
+We are collecting an initial set of example signal-camera pairs we
+plan to use for this investigation.  The first video we have found
+contains a flag.  We plan to estimate the distribution of wind
+direction given the pixel values.
+
+%
+%
+%
+\subsection{Automatic scene alignment}
+\label{sec:sceneAlignment}
+
+\begin{quote}
+  This is a very practical contribution but we don't have any ideas
+  about how to do it right (other than doing it multi-scale).  It is
+  not very exciting.
+\end{quote}
+
+Alignment of the {\it semi-static} intervals would more than double the
+number of images in the AMOS dataset available to algorithms that
+require a {\it static} camera.  There is a long history of
+work~\cite{szeliski2006alignment} on joint alignment of image sets and
+many of these techniques would work well for alignment of a small set
+of webcam images. This section describes a simple algorithm for scene
+alignment and highlights the benefits of scene alignment.
+
+Our scene alignment algorithm uses the gradient magnitude image to
+reduce sensitivity to weather and illumination conditions.  The
+algorithm initializes each image transformation to the identity and
+iterates over the following steps until convergence:
+    \vspace{-.1in}
+\begin{enumerate}
+  \item compute the average gradient magnitude image of the
+    transformed images,
+    \vspace{-.1in}
+  \item align each gradient magnitude image to the average gradient
+    magnitude image using the Lucas-Kanade method with an affine
+    motion model. 
+\end{enumerate}
+    \vspace{-.1in}
+This simple scene alignment algorithm could be improved in many ways:
+using better image features for alignment, using a more robust image
+distance measure (such as mutual information), automatic support for
+large camera motions, and coarse-to-fine alignment.  Developing a
+scene alignment technique capable of aligning all the images in the
+AMOS dataset with reasonable computational requirements is an
+important area for future work.  
+
+\begin{figure}
+\centering
+\begin{minipage}[b]{0.25\columnwidth} % A minipage that covers half a column
+\subfloat[]{ \includegraphics[width=.4\linewidth]{figs/cam_33_stripe_xy} }
+\end{minipage}
+\hspace{0.05\columnwidth}
+\begin{minipage}[ht]{0.25\columnwidth} % A minipage that covers half a column
+\subfloat[x-t slice (unaligned)]{ \includegraphics[width=.4\linewidth]{figs/cam_33_stripe_old} }
+\vspace{0.05in}
+\subfloat[x-t slice (aligned)]{ \includegraphics[width=.4\linewidth]{figs/cam_33_stripe_new} }
+\end{minipage}
+
+\caption{Results of the alignment procedure.  (a) An image from the
+scene with a horizontal line that shows the image location of the x-t
+slices shown below.  (b) An x-t slice from the unaligned image
+sequence.  (c) An x-t slice from the aligned image sequence.  }
+
+\label{fig:remove_jitter}
+\end{figure}
+
+We qualitatively evaluated the algorithm on several {\it semi-static}
+intervals from the AMOS dataset.  Figure~\ref{fig:remove_jitter} shows
+results of the scene alignment algorithm on one scene.  To better
+understand the impact of this subtle realignment we compared the
+principal components of the aligned and unaligned sequences.  The
+significant differences in both the components and the coefficients
+between the aligned and unaligned sequences are shown in
+Figure~\ref{fig:old_new_pca}).  For this scene, in the unaligned
+sequence the 3rd PCA component codes seems to code exclusively for
+camera motion.  Removing this effect directly impacts PCA based
+algorithms for geo-location~\cite{jacobs07geolocate}, and may make
+algorithms that infer lighting variation by looking at single pixel
+locations over time robust enough to not require hand chosen points.
+
+\begin{figure}
+\centering
+\subfloat[PCA coefficient scatter plots]{
+\includegraphics[width=.4\linewidth]{figs/cam_33_scatters}
+}
+\subfloat[PCA components]{
+\includegraphics[width=.15\linewidth]{figs/cam_33_pca_old}
+\hspace{.1in}
+\includegraphics[width=.15\linewidth]{figs/cam_33_pca_new}
+}
+
+\caption{ (a) Scatter plots of the top three PCA coefficients for the
+aligned and unaligned sequences.  The top two coefficients are highly
+correlated.  The impact of the alignment step is clearly evident in
+the third coefficient (right).  (b) The top three principal component
+images for the unaligned (left) and aligned (right) sequence.  The
+third component of the unaligned sequence (bottom-left) is
+significantly different from that of the aligned sequence.}
+
+\label{fig:old_new_pca}
+
+\end{figure}
+
+\subsection{Other Open Questions}
+\label{sec:misc}
+
+This section contains a collection of other tasks that may be
+completed as a component of this dissertation.  Some of these items
+potentially support some of the major objectives while others extend
+them in new directions.
+
+\begin{itemize}
+
+  \item What is the space of object detectors in many scenes?
+
+  \item Can we build a catalog of objects in one scene?
+
+  \item How should you represent images differently depending on
+    location (geographic dictionary learning)
+
+  \item How do we find and use motion?  Can we find it using PCA?
+
+  \item What is the distribution of common webcam motions?
+
+  \item Is there a fast (approximate) way to compute mutual
+    information between all pairs of patches?
+
+  \item How can we integrate flickr images?
+
+  \item where are all the sources of light in the scene?  can we find
+    them during the day and the night?  do they co-vary?
+
+\end{itemize}
+
+

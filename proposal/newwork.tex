@@ -1,0 +1,214 @@
+% Other Ideas:
+%
+% Functional PCA basis that gives a PCA basis for the entire day that
+% is a function of time of day.
+%
+
+\section{Proposed Work}
+\label{sec:research}
+In this section, we outline our proposed approach and initial steps, focusing on various goals related to soundscape mapping, such as probabilistic soundscape mapping (Section \ref{sec:psm}) and satellite image-to-audio synthesis (Section \ref{sec:synthesis}). Additionally, we discuss our plans to demonstrate the capabilities of our approaches through the development of open-source soundscape map products (Section \ref{sec:webdemos}).
+
+\subsection{Probabilistic Soundscape Mapping}
+\label{sec:psm}
+In our recent work GeoCLAP \cite{khanal2023soundscape}, we learned a shared representation space for overhead imagery, audio, and textual descriptions of audio. While we achieved promising initial results in zero-shot soundscape mapping, GeoCLAP exhibits several limitations. In this section, we address these limitations individually and propose techniques to alleviate them in our new framework: Probabilistic Soundscape Mapping (PSM).
+
+\textbf{Dataset scale:}
+ Training deep learning models on a limited dataset (approximately 35,000 samples), as done in our prior framework GeoCLAP \cite{khanal2023soundscape}, is insufficient to learn the rich representation space required to create a global-scale soundscape map. Therefore, we propose to train our models on our new dataset, \textit{GeoSound} (Section \ref{sec:dataset}), which contains over $300$k samples.
+
+\textbf{Uncertainty in Soundscape Mapping:}
+Secondly, we acknowledge that the problem of soundscape mapping is inherently ambiguous. In many cases, multiple types of sounds can originate from a given geographic location, and conversely, a specific type of sound can be heard in multiple geographic locations. Consequently, paired location and audio data are prone to containing false negatives. GeoCLAP, which learns deterministic representations of sound and overhead imagery of the location of the sound, overlooks the uncertainty inherent in soundscape mapping. To address this challenge, we advocate for learning a probabilistic cross-modal embedding space, which is more suitable for our task. Accordingly, we propose to learn a probabilistic multi-modal embedding space \cite{chun2023improved} between audio, overhead imagery, and textual descriptions of audio. Moreover, to account for false negative matches during mapping, we identify and utilize pseudo-positive matches during training \cite{chun2023improved}.
+
+\textbf{Multi-scale Soundscape Mapping:}
+The overhead image representing the capture location of the audio can be obtained at different zoom levels, where the ground area coverage of the overhead image increases as the zoom level increases. In our work to create large-scale global soundscape maps, we are interested in learning an embedding space that models differences in the zoom level of the overhead imagery. Therefore, we modify the prior zero-shot soundscape mapping formulation \cite{khanal2023soundscape} to a multi-scale zero-shot soundscape mapping so that ground-level sounds may be mapped with overhead imagery at different zoom levels. We can achieve this by learning a shared overhead image encoder across different zoom levels with a recently proposed Ground-Sample Distance Positional Embedding (GSDPE) \cite{reed2023scale}.
+
+\textbf{Metadata-aware Soundscape Mapping:}
+The soundscape of a given area depends on factors such as the time of day or the season of the year. GeoCLAP does not encode this temporal dependence into its framework. In PSM, we propose to incorporate temporal information extracted from audio metadata into our learning framework. This allows us to create temporally dynamic soundscape maps. Moreover, the GeoSound dataset contains audio collected from four different sources (Section \ref{sec:dataset}). Each audio source might have its own bias both in terms of the location of recording and the types of audios hosted by them. Therefore, we propose to also include audio-source type in PSM. Finally, as discussed in Section \ref{sec:dataset}, audio captions in GeoSound come from three different sources. Therefore, to encode the bias associated with them, we propose to include text-source type into PSM. We believe that the choice of making our framework metadata-aware makes it more flexible to include different types of metadata while improving it's performance.
+
+\label{sec:extendingPSM}
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[scale=0.80]{proposal/figs/improved_psm.png}
+    \caption{Proposed framework for Probabilistic Soundscape Mapping (PSM) integrates image, audio, and text encoders, each accepting relevant inputs. Metadata including geolocation (l), month (m), hour (h), audio-source (a), and caption-source (t) are encoded separately and fused with image embeddings using a transformer-based Metadata Fusion module. For each encoder, $\mu$ and $\sigma$ heads yield probabilistic embeddings, enabling computation of tri-modal probabilistic contrastive loss.}
+    \label{fig:improved_psm}
+\end{figure}
+
+% \subsubsection{Motivation}
+\subsubsection{Proposed Method}
+This section describes our framework (PSM) for learning a metadata-aware, probabilistic, and tri-modal embedding space for multi-scale zero-shot soundscape mapping.
+
+Figure~\ref{fig:improved_psm} presents an overview of the PSM framework, which comprises an image encoder, metadata fusion module, text encoder, and audio encoder. The scale-aware image encoder converts multi-scale satellite imagery into a $d$-dimensional representation. The transformer-based metadata fusion module integrates metadata (including location, month, time, audio source, and text source) with the image representation, generating a metadata-aware probabilistic image representation. Other modality-specific encoders produce probabilistic embeddings for text and audio. PSM aims to map tuples of satellite imagery, audio, and text into a shared probabilistic representation space.
+
+Given a geotagged audio~$X_{k}^{a}$, textual description of the audio~$X_{k}^{t}$, and a satellite image at a given location viewed at a zoom level~$l$ (an integer between 1 and some maximum zoom level $L$)~$X_{k,l}^{i}$,  ($X_{k}^{a}$,$X_{k}^{t}$,$X_{k,l}^{i}$) is the $k$-th audio-text-image triplet. PSM is trained over the aggregation of all available triplets. 
+ %to demonstrate state-of-the-art retrieval and mapping capabilities.
+
+We use modality-specific transformer-based encoders followed by their respective linear projection layers to obtain representations ($h_{k}^{a}$,$h_{k}^{t}$,$h_{k,l}^{i}$) with same dimension $d$. 
+%
+\begin{equation}\label{eq:6}
+h_{k}^{a} = g_{audio}(f_{audio}(X_{k}^{a}))
+\end{equation}
+\begin{equation}\label{eq:7}
+h_{k}^{t} = g_{text}(f_{text}(X_{k}^{t}))
+\end{equation}
+\begin{equation}\label{eq:8}
+h_{k}^{i} = g_{image}(f_{image}(X_{k}^{i}, l_{k}))
+\end{equation}
+%
+where $(f_{audio}, g_{audio})$, $(f_{text}, g_{text})$, $(f_{image}, g_{image})$  are (encoder, projection-module) pairs producing $d$ dimensional embeddings: $h_{k}^{a}$, $h_{k}^{t}$, and $h_{k}^{i}$, for audio, text, and satellite image with zoom-level $l_{k}$ respectively. 
+
+We use GSDPE~\cite{reed2023scale} to encode the position and scale of each patch of satellite imagery at zoom-level ($l$) to learn scale-aware representations of multiscale satellite imagery,
+\begin{equation}\label{eq:9}
+v_{l,x}(pos,2i) = sin(\frac{g*l}{G})\frac{pos}{10000^{\frac{2i}{d}}}
+\end{equation}
+\begin{equation}\label{eq:10}
+v_{l,y}(pos,2i+1) = cos(\frac{g*l}{G})\frac{pos}{10000^{\frac{2i}{d}}}
+\end{equation} where $pos$ is the position of the image patch along the given axis ($x$ or $y$), $i$ is the feature dimension index, $l$ is the zoom-level of the image, $g$ is the GSD of the image, and $G$ is the reference GSD. % of the image.%, usually set to $1$m. This allows the encoding of scale-aware positional encodings in our embedding space.
+
+
+As discussed before, we are interested in learning metadata-aware representation space. Therefore, we fuse four different components of metadata (geolocation, month, hour, audio-source, caption-source) with the satellite image embedding ($h_{k}^{i}$) and obtain a metadata-conditioned image embedding ($h_{k}^{i'}$).
+\begin{equation}\label{eq:11}
+h_{k}^{i'} = g_{meta}(h_{k}^{i}, metadata)
+\end{equation}
+%
+where $g_{meta}$ is the metadata fusion module of our framework, $h_{k}^{i'}$ is the embedding corresponding to the learnable special token (*) fed into $g_{meta}$.
+
+To learn a probabilistic embedding space, we define the embedding of a given modality ($r$) as a normally distributed random variable, $Z_{r}\sim N(\mu_{r}, \sigma_{r})$. We employ a closed-form probabilistic contrastive loss ~\cite {chun2023improved} between all three pairs of embeddings.  For any two modalities $p$ and $q$, the closed-form sampled distance (CSD) as defined in PCME++ ~\cite{chun2023improved} is:
+%
+\begin{equation}\label{eq:12}
+d(Z_{p},Z_{q})  %=\mathbb{E}_{Z_{p},Z_{q}}\lVert Z_{p} -Z_{q}\rVert ^{2}_{2}%
+= \lVert \mu_{p} -\mu_{q}\rVert ^{2}_{2} + \lVert \sigma_{p}^{2} +\sigma_{q}^{2}\rVert _{1}
+\end{equation}
+%
+In our implementation, we pass our modality-specific representations, $h_{k}^{a}$, $h_{k}^{t}$, and $h_{k}^{i'}$, through heads for $\mu$ and $\log(\sigma^{2})$ of the Gaussian distribution representing our samples.
+
+Based on the distance function defined in Equation \ref{eq:7}, we can then define the probabilistic matching objective function as follows:
+%
+\begin{equation}\label{eq:13}
+\begin{split}
+\mathcal{L}_{m} = -w_{pq}\log(\text{sigmoid}(-a.d(Z_p,Z_q)+b))- \\
+(1-w_{pq})\log(\text{sigmoid}(a.d(Z_p,Z_q)-b))
+\end{split}
+\end{equation}
+%
+where $w_{pq} \in \{0,1\}$ is the matching indicator between $p$ and $q$. $a$ and $b$ are learnable scalar parameters. $\mathcal{L}_{m}$ ($\mathcal{L}_{match}$) is computed for all sample pairs in the mini-batch. 
+
+Soundscape mapping is inherently a one-to-many matching problem. Given a satellite image at a location, there may be multiple sounds that are likely to be heard there. Therefore, if we were to simply assign $w_{pq}$ as $0$ or $1$ for our dataset's negative and positive matches, we would lose the opportunity to learn from the potentially numerous false negatives. Therefore, we adopt a similar strategy of learning from pseudo-positives, as formulated by Chun~\cite{chun2023improved}. In this approach, for a positive match ($p$,$q$), we consider $q'$ as a pseudo-positive match with $q$ if $d(Z_{p}, Z_{q'}) \leq d(Z_{p}, Z_{q})$. Finally, the objective function for a pair of modalities ($p,q$) becomes as follows:
+%
+\begin{equation}\label{eq:14}
+\mathcal{L}_{p,q} = \mathcal{L}_{m} + \alpha\mathcal{L}_{pseudo-m} + \beta\mathcal{L}_{VIB}
+\end{equation}
+%
+where $\alpha$ and $\beta$ control for the contribution of pseudo-match loss and Variational Information Bottleneck (VIB) loss~\cite{alemi2019deep}, respectively. We use $\mathcal{L}_{VIB}$ as a regularizer to reduce overfitting, preventing the collapse of $\sigma$~to 0.% and maintain the probabilistic nature of embeddings.
+
+To learn a tri-modal embedding space for zero-shot soundscape mapping, using Equation~\ref{eq:9}, we separately compute loss for all three pairs of modalities: audio-text ($a,t$), audio-image ($a,i$), and image-text($i,t$). Finally, the overall objective function to train PSM is as follows:
+%
+\begin{equation}\label{eq:15}
+\mathcal{L} = \mathcal{L}_{a,t} + \mathcal{L}_{a,i} + \mathcal{L}_{i,t}
+\end{equation}
+
+
+\subsubsection{Initial Steps}
+The PyTorch implementation of our proposed framework PSM has been completed. Further experimentation is required to determine suitable hyperparameters for modality-specific encoders, as well as appropriate weights for the various components of our training losses. Similar to the approach taken in GeoCLAP, we will conduct quantitative evaluations of our models on the task of cross-modal retrieval. Additionally, we plan to showcase qualitative results by visualizing soundscape maps generated in response to different audio or textual queries. These visualizations will also consider various types of metadata on which PSM is trained. Lastly, given the probabilistic nature of our embedding space, we are interested in exploring uncertainty quantification in our multi-scale soundscape maps.
+
+% \subsection{Cross-view Soundscape Grounding}
+% The soundscape mapping achieved by the previously discussed methods (GeoCLAP and PSM) shares a common limitation: the mapping between audio and overhead imagery operates at the level of entire images and audio recordings. Both methods employ a contrastive loss function between global representations of images and audio, resulting in the entire area covered by overhead imagery being mapped to the entirety of the audio recording. However, we acknowledge the presence of multiple potential sources of sound within an area captured by overhead imagery, as well as the occurrence of different audio concepts at various timestamps throughout the duration of the audio. Therefore, in this proposed work, we aim to achieve cross-view soundscape grounding. Cross-view soundscape grounding attempts to establish audio-visual grounding between different patches of overhead images and various segments of audio recordings. However, as we only possess image-audio pairs and lack fine-grained correspondence ground-truth data, we propose to adapt our existing contrastive learning frameworks to yield audio-visual grounding as a natural outcome of their learning paradigm.
+
+% \label{sec:finegrainedSM}
+% \begin{figure}[!ht]
+%     \centering
+%     \includegraphics[scale=0.80]{proposal/figs/grounded_sm.png}
+%     \caption{Proposed framework for cross-view soundscape grounding}
+%     \label{fig:grounded_sm}
+% \end{figure}
+% %Grounded PSM with or without probabilistic embeddings.
+% % \subsubsection{Motivation}
+% \subsubsection{Proposed Method}
+% We draw inspiration from a few recent works \cite{yao2021filip,dou2022coarse,ma2022x,yao2023detclipv2,chen2023revisiting} that adapt the contrastive learning objective to token/patch level representations. Such learning paradigms enable fine-grained correspondence between modalities. One such method that we plan to incorporate into our framework is a recently proposed approach for learning shared Finite Discrete Tokens (FDT) \cite{chen2023revisiting}.
+
+% As illustrated in Figure \ref{fig:grounded_sm}, modality specific encoders yield token-level representation \(h \in \mathbb{R}^{N \times d}\), where $N$ is the number of tokens and $d$ is the dimension of latent space. 
+% \begin{equation}\label{eq:16}
+% h^{a} = f_{audio}(X^{a})
+% \end{equation}
+% \begin{equation}\label{eq:17}
+% h^{t} = f_{text}(X^{t})
+% \end{equation}
+% \begin{equation}\label{eq:18}
+% h^{i} = f_{image}(X^{i})
+% \end{equation}
+% \begin{equation}\label{eq:19}
+% h^{i'} = f_{meta}(h^{i},metadata)
+% \end{equation} %
+% where $f_{audio}$, $f_{text}$, $f_{image}$  are encoders producing  a sequence of $d$-dimensional embeddings and $f_{meta}$ is a metadata fusion module yielding a sequence of $d$-dimensional embeddings ($h^{i'}$).
+
+
+% A shared finite discrete token (FDT) is a set of learnable queries \(Q \in \mathbb{R}^{C \times d}\). FDT can be used as an intermediate module to yield modality-specific features grounded to this fixed set of query vectors. For each modalities, FDT-based grounding computes attention weights (\(w \in \mathbb{R}^{N \times C}\)) and uses these weights to produce an FDT-based global representation (\(h \in \mathbb{R}^{1 \times d}\)). Finally, global representation for each modality are utilized to train our overall framework using either deterministic or probabilistic contrastive losses.
+
+% \subsubsection{Initial steps}
+% Beyond the FDT-based framework discussed above, we have also been exploring other effective methods for unsupervised cross-modal grounding. Many of these methods have shown success with image-text pairs. However, when adapting these existing techniques for the image-audio domain, we encounter a unique challenge: unlike a word corresponding to a set of patches in an image, a segment of audio can feature multiple sound sources co-occurring simultaneously. This adds an additional dimension to the task of cross-modal grounding. We plan to delve deeper into this challenge and refine our proposed framework accordingly.
+
+
+\subsection{Sat2Sound Synthesis}
+\label{sec:synthesis}
+All of the existing frameworks for soundscape mapping discussed thus far have focused on achieving this mapping through cross-modal retrieval, where the objective is to retrieve the most likely sound from a gallery given a specific geolocation (represented by an overhead image). In this task, we propose an alternative approach that involves learning to directly generate sound conditioned on an overhead image and other relevant metadata. To achieve this, as illustrated in Figure \ref{fig:sat2sound}, we will develop a satellite-image-to-audio synthesis model based on a Latent Diffusion Model (LDM)~\cite{rombach2022high}. LDMs have demonstrated effectiveness as generative models and can produce realistic content under diverse conditions, leveraging advanced techniques such as the ControlNet adapter~\cite{zhang2023adding}. Specifically, our approach will leverage SOTA text-to-audio synthesis models like TANGO~\cite{ghosal2023text} and utilize a ControlNet-based conditioning adapter to construct our satellite image-to-audio synthesis model (\textit{sat2sound}). This novel framework aims to directly generate semantically meaningful audio from satellite imagery, offering a promising avenue for multimodal synthesis in environmental sound mapping.
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[scale=0.05]{proposal/figs/tango.png}
+    \caption{Text-to-Audio Synthesis Model, TANGO~\cite{ghosal2023text}}
+    \label{fig:tango}
+\end{figure}
+
+\subsubsection{Pre-trained Text-to-Audio Model}
+Our approach utilizes a SOTA text-to-audio synthesis model, TANGO~\cite{ghosal2023text}. Illustrated in Figure \ref{fig:tango}, TANGO is composed of four components: i) a latent diffusion model (LDM), ii) a mel-spectrogram/audio variational autoencoder (VAE), iii) a pretrained text encoder (FLAN-T5), and iv) a vocoder (HiFi GAN). Within the TANGO framework, the text encoder, vocoder, and VAE are pretrained models specifically tailored for their respective tasks and remain frozen during training, with the sole focus on training the LDM. The text encoder encodes the textual description of audio, which then serves as conditioning for the LDM operating in the latent space of audio mel-spectrograms. Subsequently, the diffusion model predicts a latent representation, which is then decoded back into a mel-spectrogram by the VAE decoder. Finally, the decoded mel-spectrogram is transformed back into an audio waveform using the vocoder. This comprehensive framework enables the synthesis of high-quality audio from textual prompts, showcasing the effectiveness of leveraging the strength of existing pretrained models for text-to-audio synthesis.
+
+\subsubsection{ControlNet} 
+To leverage the strength of an existing text-to-audio synthesis model for conditioning on satellite imagery and additional metadata, we propose to utilise a recently proposed method called ControlNet~\cite{zhang2023adding}. ControlNet integrates additional conditions into a powerful pre-trained conditional LDM. The key benefit of using ControlNet is that it allows the incorporation of new conditions without fine-tuning the weights of the original diffusion model, thus retaining its capabilities. ControlNet incorporates \textit{zero convolutions}, which are convolution layers initialized with zeros and gradually expand their parameters during training. This design strategy aims to safeguard the fine-tuning process against noise interference, ensuring stable and effective adaptation to new conditions.
+ 
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[scale=0.6]{proposal/figs/sat2sound.png}
+    \caption{Proposed framework for satellite image to audio synthesis. The image encoder processes the satellite image, while metadata such as geolocation (l), month (m), hour (h), audio source (a), and caption source (t) are encoded separately. These encoded metadata are then fused with image embeddings using a transformer-based Metadata Fusion module. This fused condition is utilized to train our \textit{sat2sound} framework.}
+    \label{fig:sat2sound}
+\end{figure}
+\subsubsection{Proposed Framework} 
+As depicted in Figure \ref{fig:sat2sound}, our framework comprises five main components: i) a latent diffusion model (LDM), ii) a mel-spectrogram/audio variational autoencoder (VAE), iii) a vocoder (HiFi GAN), iv) a condition extractor, and v) a controlNet module. The LDM, VAE, and vocoder are obtained from the pre-trained TANGO model and thus are maintained in a frozen state during the training of our framework. The image encoder within the condition extractor first encodes the satellite image, followed by a metadata fusion module that integrates other relevant metadata with the image embeddings. Subsequently, the metadata-aware condition is utilized by the controlNet to be injected into the latent space of the pre-trained LDM. Finally, the latent representation predicted by the LDM is decoded into a mel-spectrogram, which is further decoded back into the audio waveform by the pre-trained vocoder used in the TANGO model.
+
+\subsubsection{Initial Steps:} 
+To train our sat2sound synthesis diffusion model, we plan to utilize the weights of an existing state-of-the-art text-to-sound generative model, TANGO \cite{ghosal2023text}. Accordingly, we have adapted the TANGO model by incorporating a ControlNet-based input adapter to input satellite images as a new condition. This adaptation necessitates additional hyper-parameter tuning. Moreover, besides using satellite images alone, we can also condition the audio generation with available metadata, as well as attention weights for the image patches obtained from the fine-grained learning framework proposed in Section \ref{sec:synthesis}.
+
+
+\subsection{Capability demonstration}
+\label{sec:demos}
+In this section, we present our plans for developing different types of open-sourced soundscape map products. These include retrieval/synthesis-based web demo, and the release of an open-source global-scale soundscape map product.
+
+
+\subsubsection{Open-source soundscape map products}
+\label{sec:webdemos}
+We aim to create various soundscape map-related products and release them in the form of web demos. There are two specific products we are interested in. Firstly, a web demo where users can point to any place on Earth and listen to the most likely sound at that location. This sound can be either retrieved from a gallery by one of our retrieval-based models or generated directly by our generative model (Section \ref{sec:synthesis}). 
+
+Secondly, we plan to create a global-scale soundscape map, which will likely be hosted in Google Earth Engine. In principle, this map will resemble global map products such as land-cover maps and will provide coarse sound categories for each location on Earth.
+
+\textbf{Initial Steps:} We have made some progress towards the development of global-scale soundscape maps. Currently, we have an initial version of a functioning web demo of the soundscape map based on our first proposed model, GeoCLAP (Section \ref{sec:geoclap}). We will refine our web demo to incorporate other features as we develop models from our other proposed frameworks.
+
+Regarding the global-scale soundscape map product, we have downloaded approximately $2.5$ million Sentinel-2 cloudless images covering the landmass of the entire Earth. We plan to train one of our contrastive learning frameworks on our \textit{GeoSound} dataset while using images from our new global coverage Sentinel image dataset. This will allow us to have a model that can be used to produce a global-scale soundscape map conditioned on freely available \textit{Sentinel-2} imagery.
+
+\subsection{Timeline}
+\begin{tabular}{|>{\raggedright\arraybackslash}p{0.3\linewidth}|>{\raggedright\arraybackslash}p{0.2\linewidth}|>{\raggedright\arraybackslash}p{0.3\linewidth}|}
+    \hline
+    \textbf{Objective} & \textbf{Date} & \textbf{Deliverables} \\
+    \hline
+    Demonstrate zero-shot soundscape mapping using \textit{SoundingEarth} dataset (Objective 1) & January -- May 2023 & First paper introducing the task \\
+    \hline
+    Create large-scale dataset (Objective 2) & June -- November 2023 & GeoSound dataset \\
+    \hline
+    Development of metadata-aware probabilistic multimodal learning framework (PSM) for soundscape mapping (Objectives 3 \& 4) & January -- May 2024 & Paper on PSM \\
+    \hline
+    Prepare and defend dissertation proposal & January -- May 2024 & Dissertation proposal defense \\
+    \hline
+    Satellite to audio synthesis (Objective 5) & August -- December 2024 & Paper on sat-to-audio synthesis \\
+    \hline
+    Capability demonstration (Objective 6) & August -- December 2024 & Global-scale soundscape products, web-demo for location to sound retrieval/synthesis \\
+    \hline
+    Dissertation writing and preparation & January -- April 2025 & Dissertation writing \\
+    \hline
+    Defend dissertation & May 2025 & Successful dissertation defense \\
+    \hline
+\end{tabular}

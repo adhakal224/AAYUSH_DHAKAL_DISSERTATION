@@ -1,0 +1,147 @@
+\section{Chapter 3: Understanding the Risks and Benefits of Generative Models from the Perspective of Representation Learning}
+
+\subsection{Overview}
+In the first two chapters, we explore how powerful representations of data allow us to solve downstream tasks with greater efficiency and efficacy. We posed the geospatial representation learning problem as a neural field problem where we want to learn $R=F_\theta(lat, lon)$. Generative models pose a double-edged role in this landscape. On the positive side, they can be used to expand datasets through synthetic augmentation and unlock new possibilities for representation learning. The efficacy of representation learning scales with data and generative models can provide an easy alternative to scale pretraining. However, generative models also introduce the risk of contaminating training pipelines with low-quality data. Such contamination can mislead models into capturing spurious correlations, amplify existing biases, and ultimately yield representations that diverge from the true structure of the data. From this perspective, generative models are not simply tools for data creation but also potential vectors for introducing noise, bias, and adversarial artifacts into our neural representation fields. Understanding and mitigating these risks is, therefore, essential for building trustworthy and robust downstream models.
+
+In Chapter 3, we will examine the potential risks and limitations of deep-generative geospatial models. First, we will demonstrate that current generative geospatial models introduce strong artifacts in the generated images. Second, we will propose a new metric that measures the strength of these artifacts in a given generative model. Third, we will propose a simple but powerful solution to detect deepfake images in a real-world blackbox setting, where users do not have knowledge of the source of an image. Finally, we will use the findings to propose better generative models that can feed into representation learning pipelines while maintaining the integrity and fidelity of the learned representations. By doing so, we aim to ensure that generative augmentation enhances rather than compromises the quality of downstream tasks, paving the way for robust, trustworthy, and scalable geospatial AI systems.
+
+\subsection{Do Geospatial Generative Models Introduce Strong Artifacts in their Images?}
+\label{sec:few-shot}
+In this section, we will examine various geospatial generative models and assess the quality of the generated fakes. We will do this by using few-shot learning. Images that exhibit strong artifacts will be easier to detect compared to images that do not contain such artifacts. Hence, it should be possible to learn a good deepfake detector for models with strong artifacts, even when we only have access to a few samples.
+\\
+\\
+\noindent \textbf{Dataset:}
+We will use the RSFAKE-1M data, a large-scale dataset for detecting diffusion-generated remote sensing forgeries~\cite{tan2025rsfake}. The dataset contains 500,000 real and 500,000 forged satellite images. The forged images are obtained from 10 different diffusion models that are trained on remote sensing images. 
+\\
+\\
+\noindent\textbf{Experimental Setup:} 
+Assume we have real images from set $R$, and fake images from set $F$. All images in $F$ are generated from the same model. We want to understand if it is possible to identify all samples in $F$, if we only have access to a subset of $F$, $G$ with n fake images during training (where n is very small).
+
+During training, we have access to $R=\{r_1, r_2, ..., r_k\}$, and $G=\{g_1, g_2, ...g_n\}$. All the real images are passed through a powerful, pre-trained satellite image encoder $I$, which produces the set of real features $R_f$. Since $\lvert R \lvert >> \lvert G \lvert$, we apply multiple augmentations to $g_i$, and artificially increase the number of fake samples. All of the fake samples are then passed through the pre-trained satellite image encoder $I$, which produces the set of generated image features $G_f$. We then train a simple linear binary classifier to distinguish between real and fake images.
+\\
+\\
+\begin{table*}[]
+\resizebox{\linewidth}{!}{
+\begin{tabular}{llll|lll|lll|lll}
+\multicolumn{1}{r}{} & \multicolumn{3}{c|}{100 samples} & \multicolumn{3}{c|}{10 samples} & \multicolumn{3}{c|}{2 samples} & \multicolumn{3}{c}{1 sample} \\ \hline
+                     & Acc   & Auc   & \multicolumn{1}{l|}{F1} & Acc   & Auc   & \multicolumn{1}{l|}{F1} & Acc   & Auc   & \multicolumn{1}{l|}{F1} & Acc   & Auc   & F1 \\ \hline
+Geosynth         & 0.999 & 0.999 & 0.999 & 0.998 & 0.999 & 0.998 & 0.979 & 0.997 & 0.979 & 0.969 & 0.995 & 0.969 \\
+Geosynth-SAM     & 0.999 & 0.999 & 0.999 & 0.997 & 0.999 & 0.997 & 0.986 & 0.999 & 0.986 &    0.986   &    0.999   &   0.986   \\
+Rsinpaint        & 0.969 & 0.997 & 0.969 & 0.931 & 0.986 & 0.928 & 0.877 & 0.964 & 0.863 & 0.775 & 0.908 & 0.725 \\
+GeoRSSD (fmow)       & 0.997 & 0.999 & 0.997 & 0.992 & 0.999 & 0.992 & 0.988 & 0.999 & 0.988 & 0.979 & 0.998 & 0.979 \\
+MapSat           & 0.999 & 0.999 & 0.999 & 0.996 & 0.999 & 0.996 & 0.995 & 0.999 & 0.995 & 0.845 & 0.979 & 0.819 \\
+DiffusionSat-512 (fmow) & 0.994 & 0.999 & 0.994 & 0.986 & 0.999 & 0.985 & 0.943 & 0.991 & 0.941 & 0.890 & 0.976 & 0.881 \\
+DiffusionSat-256 (fmow) & 0.995 & 0.999 & 0.995 & 0.989 & 0.999 & 0.989 & 0.967 & 0.994 & 0.967 & 0.854 & 0.967 & 0.836 \\
+CrsDiff (fmow) & 0.997 & 0.999 & 0.997 & 0.968 & 0.997 & 0.968 & 0.908 & 0.989 & 0.900 & 0.606 & 0.831 & 0.368 \\
+SDFRS            & 0.999 & 0.999 & 0.999 & 0.999 & 0.999 & 0.999 & 0.978 & 0.998 & 0.977 & 0.982 & 0.999 & 0.981 \\
+
+
+\end{tabular}
+}
+\caption{A linear classifier with few-shot examples yields good results in detecting geospatial deepfakes.}
+\label{table:few-shot}
+\end{table*}
+\noindent\textbf{Preliminary Results:}
+We conduct this experiment for each model in the RSFAKE-1M dataset. We report the results for $n=\{100,10,2,1\}$. The results are reported in Table~\ref{table:few-shot}. The preliminary results show that it is possible to learn a strong binary classifier with access to as few as one fake sample from a generative model. This leads us to make two crucial hypotheses:
+\begin{enumerate}
+    \item Every image generated from a model contains artifacts that are, in part or in whole, shared by any other images generated from the same model.
+    \item Including images with such strong artifacts for training new models will result in biased models and biased representations.
+\end{enumerate}
+We will design methods to validate these hypotheses experimentally.
+
+\subsection{A New Metric to Understand the Presence of Artifacts in Geospatial Deepfakes}
+\label{sec:seperability}
+Based on our findings in Section~\ref{sec:few-shot}, we will propose a new metric to measure the performance of a geospatial generative model. Our metric measures, ``for a generative model $G$, how many randomly-sampled fake images are needed to learn a linear classifier that gets an accuracy of K on an unseen test set". The linear classifier is learned using the protocol described in Section~\ref{sec:few-shot}. When comparing different models, the same feature extractor must be used for a fair comparison. For a generative model, a lower value of Separability indicates that the model introduces trivial artifacts in all images that it produces. In contrast, a higher value suggests that artifacts are less prevalent. We will compute the Separability value for the state-of-the-art generative models to have a better understanding of which models can be used to generate synthetic data with minimal risks. 
+
+\begin{figure*}[!t]
+\begin{center}
+\includegraphics[width=\linewidth, scale=0.3]{proposal/images/simdlr_framwork.png}
+\end{center}
+   \caption{\textbf{Framework of SimDLR: }Our framework combines the fake images with other real and fake images in the latent space in order to increase the diversity of artifacts during training. By doing this manipulation in the latent space, we can use simple arithmetic operations with randomly sampled alphas to create highly diverse samples.} 
+\label{fig:simdlr}
+\end{figure*}
+\subsection{SimDLR: A Simple Framework for Generalized Deepfake Detection using Linear Combinations of Representations}
+\label{sec:simdlr}
+Deepfake detectors, during training, often overfit to models in their training set and fail to generalize well when tested on images from unseen models. However, this is often the setting that is encountered in practice. In this section, we propose to develop a robust framework for Geospatial Deepfake Detection in real-world scenarios. Specifically, we propose a training strategy that utilizes generated images from one model during training while generalizing well to images generated from unseen models during inference. We call this model SimDLR.
+
+To prevent overfitting to artifacts from a single model, we need to increase the diversity of artifacts that our model sees during training. Our few-shot experiments show that powerful pretrained models like Dinov3 capture the deepfake artifacts in their artifacts. We know that arithmetic operations in the representation space often translate to semantic operations in the pixel space. Hence, we propose increasing the diversity of artifacts during training by linearly combining the representations from real and fake samples. 
+\subsubsection{Method}
+Assume a set of real samples $R$ and fake samples $F$, from model $A$. We have a pretrained satellite image encoder $I$. During training, images are passed through $I$, which is frozen, and then passed through a linear binary classifier $L$. 
+
+Our framework diagram is shown in Figure~\ref{fig:simdlr}. For a sample $s_i$ during training, if $s_i \in R$, we compute $L(I(s_i))$. If $s_i \in F$, we randomly sample either a real or a fake image $u_i$ from the training set. We compute $I(s_i)$ and $I(u_i)$ and then sample $\alpha$ uniformly, such that $\alpha \in [0,0.9)$. The final fake embedding is computed as:
+\begin{align}
+    &F_i = (1-\alpha)*I(s_i) + \alpha*I(u_i)\\
+    &Loss_i = BCE(L(F_i), 1)
+\end{align}
+, where $BCE$ is the Weighted Binary Cross-Entropy Loss.
+
+
+\begin{table*}[]
+\resizebox{\linewidth}{!}{
+\begin{tabular}{l|cccccccc|c}
+           & CrsDiff                   & MapSat                    & Geosynth-T                & Geosynth-C                & Geosynth-S                & Rsinpaint                 & SDFRS                     & GeoRSSD  & Avg                 \\
+           \hline
+           & \multicolumn{8}{c|}{F1}                                                                                                                                                                                                       \\
+           \cline{2-10}
+
+Dino       & \multicolumn{1}{c}{0.148} & \multicolumn{1}{c}{0.675} & \multicolumn{1}{c}{0.701} & \multicolumn{1}{c}{0.858} & \multicolumn{1}{c}{0.676} & \multicolumn{1}{c}{0.458} & \multicolumn{1}{c}{0.665} & \multicolumn{1}{c|}{0.635} & \multicolumn{1}{c}{0.602} \\
+SimDLR (Ours)     & \multicolumn{1}{c}{0.621} & \multicolumn{1}{c}{0.888} & \multicolumn{1}{c}{0.946} & \multicolumn{1}{c}{0.956} & \multicolumn{1}{c}{0.950} & \multicolumn{1}{c}{0.866} & \multicolumn{1}{c}{0.928} & \multicolumn{1}{c|}{0.947} & \multicolumn{1}{c}{\textbf{0.887}} \\
+\cline{2-10}
+           & \multicolumn{8}{c|}{Accuracy}                                                                                                               \\
+\cline{2-10}
+
+Dino       & 0.538                     & 0.753                     & 0.769                     & 0.876                     & 0.755                     & 0.647                     & 0.748                     & 0.731   &    0.727               \\
+SimDLR (Ours)     & 0.702                     & 0.891                     & 0.944                     & 0.954                     & 0.949                     & 0.873                     & 0.928                     & 0.946    &  \textbf{0.898}              
+\end{tabular}
+}
+\caption{\textbf{Accuracy on different fake satellite image datasets while training only using Diffusionsat images:} Performing augmentation in the feature space allows models to learn from a more diverse set of fake images and prevents overfitting to specific patterns from a model. SimDLR aggregates multiple real and fake images in the latent space to prevent model overfitting.}
+\label{table:simdlr}
+\end{table*}
+\subsubsection{Experiments and Results}
+For the experiment, we choose DiffusionSat-generated images for training and evaluate on 7 different unseen models. As baseline, we compare with performing a linear probe using Dinov3 features, without using our proposed augmentations. The results are shown in Table~\ref{table:simdlr}. Our method achieves significant gains in F1 and Accuracy across all the models. Our method demonstrates an average F1 gain of 0.285 and an average accuracy gain of 17.1\%. These preliminary results suggest that our simple method of diversifying the artifacts in the latent space is a highly effective strategy for generalized deepfake detection in geospatial models.
+
+\subsection{Proposed Direction}
+In this section, we outline the next steps planned for this chapter. In Section~\ref{sec:few-shot}, we conducted few-shot learning experiments on geospatial deepfakes and proposed two hypotheses from the results. We plan to validate these hypotheses with experimental results. For H1, we will design visualization pipelines to inspect the artifacts in the deepfake qualitatively. For H2, we will utilize the representations extracted from deepfakes to train downstream models and investigate how this impacts performance when compared to using uncorrupted training data. 
+
+In Section~\ref{sec:seperability}, we proposed a new metric, $Seperability@K$, to measure the presence of artifacts in deepfakes. We will compute this metric for the state-of-the-art geospatial generative models. We will rank the models based on our metric and analyze the correlation with other generative metrics such as LPIPS and FID scores. 
+
+In Section~\ref{sec:simdlr}, we proposed SimDLR, a simple framework for generalizable deepfake detection using linear combinations of latent representations. We will compare our method with other state-of-the-art methods, both in terms of efficiency and efficacy. We will also investigate further adaptations to the framework. We will explore the benefits of soft-label learning, where the labels will be converted from hard $\{0,1\}$ binary choices to soft continuous labels $[0,1]$, guided by the $\alpha$ parameter. Furthermore, we will examine the utility of some non-linear combination strategy for combining the representations, as opposed to the purely linear combinations that we currently use. Finally, we aim to utilize SimDLR as a feedback mechanism for generative models to improve the $Separability$ score of these models. A better generative model can feed into pretraining pipelines to scale and learn richer and more generalizable representations. 
+
+\subsection{Chapter Conclusion}
+In summary, these are the major tasks required to complete this chapter:
+\begin{itemize}
+    \item Design a framework to validate the hypotheses offered in Section~\ref{sec:few-shot}.
+    \item Run experiments to compute $ Separability$ scores for state-of-the-art models. Validate the utility of our proposed metrics.
+    \item Make improvements to the proposed SimDLR method.
+    \item Work towards using the results from this chapter to improve geospatial generative models and feed good quality data to improve representation learning pipelines.
+\end{itemize}
+\newpage
+\section{Timeline}
+\begin{table}[!h]
+\resizebox{\linewidth}{!}{
+\begin{tabular}{llllllllllllllll}
+\hline
+ \multicolumn{1}{|l|}{} & \multicolumn{8}{c|}{2025}                                                                                                                                                                                                                   & \multicolumn{7}{c|}{2026}                                                           \\
+\hline
+\multicolumn{1}{|l|}{}                                                                                    & \multicolumn{1}{l|}{May} & \multicolumn{1}{l|}{Jun} & \multicolumn{1}{l|}{Jul} & \multicolumn{1}{l|}{Aug} & \multicolumn{1}{l|}{Sep} & \multicolumn{1}{l|}{Oct} & \multicolumn{1}{l|}{Nov}                      & \multicolumn{1}{l|}{Dec} & \multicolumn{1}{l|}{Jan} & \multicolumn{1}{l|}{Feb} & \multicolumn{1}{l|}{Mar} & \multicolumn{1}{l|}{Apr} & \multicolumn{1}{l|}{May} & \multicolumn{1}{l|}{Jun} & \multicolumn{1}{l|}{Jul} \\ \hline
+\multicolumn{1}{|l|}{Internship}                                                                          & \multicolumn{4}{l|}{\cellcolor[HTML]{FFCE93}}                                                             & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}                         & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    \\ \hline
+\multicolumn{1}{|l|}{Few-shot experiments}                                                                & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{3}{l|}{\cellcolor[HTML]{CBCEFB}}                                  & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}                         & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    \\ \hline
+\multicolumn{1}{|l|}{Initial SimDLR framework}                                                            & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{2}{l|}{\cellcolor[HTML]{CBCEFB}}       & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}                         & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    \\ \hline
+\multicolumn{1}{|l|}{Work on dissertation proposal}                                                       & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{3}{l|}{\cellcolor[HTML]{FFFFC7}}                                  & \multicolumn{1}{l|}{}                         & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    \\ \hline
+\multicolumn{1}{|l|}{Seperability metric}                                                                 & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{3}{l|}{\cellcolor[HTML]{CBCEFB}}                                                       & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    \\ \hline
+\multicolumn{1}{|l|}{\begin{tabular}[c]{@{}l@{}}Experimental validation of\\ hypotheses\end{tabular}}     & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{2}{l|}{\cellcolor[HTML]{CBCEFB}}                            & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    \\ \hline
+\multicolumn{1}{|l|}{New adjustments to SimDLR}                                                           & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{4}{l|}{\cellcolor[HTML]{CBCEFB}}                                                                                  & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    \\ \hline
+\multicolumn{1}{|l|}{\begin{tabular}[c]{@{}l@{}}Submit SimDLR and Sat360 \\ to CVPR 2026\end{tabular}}                                                           & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{\cellcolor[HTML]{34ff34}} & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    \\ \hline
+
+\multicolumn{1}{|l|}{\begin{tabular}[c]{@{}l@{}}Using SimDLR to improve \\ generative models\end{tabular}} & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}                         & \multicolumn{1}{l|}{}    & \multicolumn{4}{l|}{\cellcolor[HTML]{CBCEFB}}                                     & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    \\ \hline
+\multicolumn{1}{|l|}{Deadline for ECCV 2026}                                                           & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{\cellcolor[HTML]{34ff34}}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    \\ \hline
+\multicolumn{1}{|l|}{Write and defend dissertation}                                                       & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}                         & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}       & \multicolumn{5}{l|}{\cellcolor[HTML]{FFFFC7}}                                                             \\ \hline
+\end{tabular}
+}
+\caption{Proposed timeline to complete dissertation.}
+\end{table}
+    
+    
+
+
+

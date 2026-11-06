@@ -1,0 +1,64 @@
+\documentclass[11pt]{article}
+
+\usepackage{times}
+\usepackage{subfig}
+\usepackage{amsfonts}
+\usepackage{epsfig}
+\usepackage{wrapfig}
+\usepackage{graphicx}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\usepackage{verbatim}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{pifont}
+\usepackage{array}
+\usepackage{paralist}
+\usepackage{multirow}
+\usepackage{subcaption} % add this in the preamble
+\usepackage{subfigure}
+\usepackage[table,xcdraw]{xcolor}
+
+\usepackage[pagebackref=true,breaklinks=true,colorlinks,bookmarks=false]{hyperref} 
+
+\usepackage{jacobsn}
+
+\setcounter{tocdepth}{2}
+
+\newcommand{\ditem}[1]{\item {\sc #1}\hspace{.1in}}
+\newcommand{\todo}[1]{\textbf{TODO:} \textsf{#1}}
+
+\usepackage{geometry}
+
+\author{Aayush Dhakal}
+\title{Learning Powerful Deep Representations for Geospatial Multimodal Data}
+% \title{Soundscape Mapping with Satellite and Audio}
+
+
+%\includeonly{newwork}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Learning models that can extract meaningful representations from raw data is a fundamental problem in deep learning. The quality of these learned representations largely determines performance on downstream tasks. Representation learning, a key subfield of machine learning, develops algorithms to learn such representations. However, generic methods often fail to fully exploit the unique properties of different data modalities. In this work, we focus on designing representation learning methods for geospatial data that leverage modality-specific inductive biases and structural properties to produce richer and more effective representations. We explore multimodal data sources such as satellite imagery, and geospatial coordinates. By tailoring algorithms to the characteristics of geospatial data, we demonstrate that we can construct highly efficient learning frameworks that yield stronger and more generalizable representations. 
+
+\end{abstract}
+
+\newpage
+
+{\tableofcontents }
+
+\include{introduction}
+\include{related}
+\include{chapter_1}
+\include{chapter_2}
+\include{proposal/chapter_3}
+% \include{newwork}
+
+
+\bibliographystyle{abbrv}
+\bibliography{phd}
+
+\end{document}
+ 
